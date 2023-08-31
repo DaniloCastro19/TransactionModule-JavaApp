@@ -1,5 +1,16 @@
 # transaction-module
 
+## Setup environment
+1. Install Mvn
+2. Install Java 17
+3. Clone repository
+4. run $ mvn clean install
+
+## Structure
+- All the functionality should be implemented on domain.TransactionModule
+- To add UI functionality use presentation.TransactionView
+- To use the dbs tables implement the AccountDAO or TransactionDAO
+
 
 
 ## Getting started
