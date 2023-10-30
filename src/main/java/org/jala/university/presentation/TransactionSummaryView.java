@@ -15,12 +15,13 @@ public class TransactionSummaryView extends JFrame {
     private final int LABEL_STANDARD_WIDTH = 150;
     private final int FIELD_STANDARD_WIDTH = 300;
     private final int LABEL_FIELD_STANDARD_HEIGHT = 25;
-    private int labelAndFieldVerticalPosition = 45; //Initial value
+    private int labelAndFieldVerticalPosition;
 
     public TransactionSummaryView(String[] transactionValues) {
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
         contentPane.setBackground(Color.WHITE);
+        labelAndFieldVerticalPosition = 45; // Initial position value
 
         setTitle("Resumen de Transacción");
         setSize(500, 600);
