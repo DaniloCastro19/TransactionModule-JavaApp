@@ -64,14 +64,14 @@ public class TransactionModuleValues {
         this.accountFrom = accountFrom;
     }
     public String getPrintableAccountFrom(){
-        return this.accountFrom.getAccountNumber();
+        return this.accountFrom.getName();
     }
 
     public void setAccountTo(Account accountTo) {
         this.accountTo = accountTo;
     }
     public String getPrintableAccountTo() {
-        return this.accountTo.getAccountNumber();
+        return this.accountTo.getName();
     }
 
     public void setTransactionStatus(TransactionStatus status) {
