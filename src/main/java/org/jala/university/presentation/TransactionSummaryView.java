@@ -17,7 +17,7 @@ public class TransactionSummaryView extends JFrame {
     private final int LABEL_FIELD_STANDARD_HEIGHT = 25;
     private int labelAndFieldVerticalPosition;
 
-    public TransactionSummaryView(String[] transactionValues) {
+    public TransactionSummaryView(TransactionModuleValues transactionValues) {
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
         contentPane.setBackground(Color.WHITE);
@@ -29,31 +29,31 @@ public class TransactionSummaryView extends JFrame {
         setLocationRelativeTo(null);
 
         int VERTICAL_POSITION_MOVEMENT = 40;
-        idCreatorUI(transactionValues[0]);
+        idCreatorUI(transactionValues.getPrintableId());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        dateCreatorUI(transactionValues[1]);
+        dateCreatorUI(transactionValues.getPrintableDate());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        transactionTypeCreatorUI(transactionValues[2]);
+        transactionTypeCreatorUI(transactionValues.getPrintableTransactionType());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        amountCreationUI(transactionValues[3]);
+        amountCreationUI(transactionValues.getPrintableAmount());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        currencyCreatorIU(transactionValues[4]);
+        currencyCreatorIU(transactionValues.getPrintableCurrency());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountFromCreatorUI(transactionValues[5]);
+        accountFromCreatorUI(transactionValues.getPrintableAccountFrom());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountToCreatorUI(transactionValues[6]);
+        accountToCreatorUI(transactionValues.getPrintableAccountTo());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        statusCreatorUI(transactionValues[7]);
+        statusCreatorUI(transactionValues.getPrintableTransactionStatus());
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        descriptionCreatorUI(transactionValues[8]);
+        descriptionCreatorUI(transactionValues.getPrintableDescription());
     }
     private void idCreatorUI(String id) {
         idLabel = new JLabel("ID: ");
