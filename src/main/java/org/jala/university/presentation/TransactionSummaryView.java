@@ -1,8 +1,13 @@
 
 package org.jala.university.presentation;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import javax.swing.BorderFactory;
+import java.awt.Color;
+import java.awt.Container;
 
 public class TransactionSummaryView extends JFrame {
     private JLabel idLabel, dateLabel, typeLabel, amountLabel, currencyLabel,
