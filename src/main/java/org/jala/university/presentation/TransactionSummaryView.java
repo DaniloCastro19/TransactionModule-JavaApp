@@ -1,4 +1,3 @@
-
 package org.jala.university.presentation;
 
 import javax.swing.JFrame;
@@ -10,10 +9,24 @@ import java.awt.Color;
 import java.awt.Container;
 
 public class TransactionSummaryView extends JFrame {
-    private JLabel idLabel, dateLabel, typeLabel, amountLabel, currencyLabel,
-            accountFromLabel, accountToLabel, statusLabel, descriptionLabel;
-    private JTextField idField, dateField, typeField, amountField, currencyField,
-            accountFromField, accountToField, statusField;
+    private JLabel idLabel;
+    private JLabel dateLabel;
+    private JLabel typeLabel;
+    private JLabel amountLabel;
+    private JLabel currencyLabel;
+    private JLabel accountFromLabel;
+    private JLabel accountToLabel;
+    private JLabel statusLabel;
+    private JLabel descriptionLabel;
+
+    private JTextField idField;
+    private JTextField dateField;
+    private JTextField typeField;
+    private JTextField amountField;
+    private JTextField currencyField;
+    private JTextField accountFromField;
+    private JTextField accountToField;
+    private JTextField statusField;
     private JTextArea descriptionArea;
     private final Color BACKGROUND_TEXT_FIELD_COLOR = new Color(230,230,230);
     private final int LABEL_STANDARD_HORIZONTAL_POSITION = 20;
