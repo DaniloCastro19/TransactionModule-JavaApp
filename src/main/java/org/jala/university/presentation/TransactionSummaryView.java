@@ -27,151 +27,74 @@ public class TransactionSummaryView extends JFrame {
         setSize(500, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         int VERTICAL_POSITION_MOVEMENT = 40;
-        idCreatorUI(transactionValues.getPrintableId());
+
+        idLabel = labelCreator("ID");
+        add(idLabel);
+        idField = fieldCreator(transactionValues.getPrintableId());
+        add(idField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        dateCreatorUI(transactionValues.getPrintableDate());
+        dateLabel = labelCreator("Fecha: ");
+        add(dateLabel);
+        dateField = fieldCreator(transactionValues.getPrintableDate());
+        add(dateField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        transactionTypeCreatorUI(transactionValues.getPrintableTransactionType());
+        typeLabel = labelCreator("Tipo Transacción: ");
+        add(typeLabel);
+        typeField = fieldCreator(transactionValues.getPrintableTransactionType());
+        add(typeField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        amountCreationUI(transactionValues.getPrintableAmount());
+        amountLabel = labelCreator("Monto: ");
+        add(amountLabel);
+        amountField = fieldCreator(transactionValues.getPrintableAmount());
+        add(amountField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        currencyCreatorIU(transactionValues.getPrintableCurrency());
+        currencyLabel = labelCreator("Divisa: ");
+        add(currencyLabel);
+        currencyField = fieldCreator(transactionValues.getPrintableCurrency());
+        add(currencyField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountFromCreatorUI(transactionValues.getPrintableAccountFrom());
+        accountFromLabel = labelCreator("Cuenta Debitada: ");
+        add(accountFromLabel);
+        accountFromField = fieldCreator(transactionValues.getPrintableAccountFrom());
+        add(accountFromField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountToCreatorUI(transactionValues.getPrintableAccountTo());
+        accountToLabel = labelCreator("Cuenta Destinataria: ");
+        add(accountToLabel);
+        accountToField = fieldCreator(transactionValues.getPrintableAccountTo());
+        add(accountToField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        statusCreatorUI(transactionValues.getPrintableTransactionStatus());
+        statusLabel = labelCreator("Estado Transacción: ");
+        add(statusLabel);
+        statusField = fieldCreator(transactionValues.getPrintableTransactionStatus());
+        add(statusField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
         descriptionCreatorUI(transactionValues.getPrintableDescription());
     }
-    private void idCreatorUI(String id) {
-        idLabel = new JLabel("ID: ");
-        idLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
+
+    private JLabel labelCreator(String labelName) {
+        JLabel label = new JLabel(labelName);
+        label.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
                 LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(idLabel);
-
-        idField = new JTextField(id);
-        idField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        idField.setEnabled(false);
-        idField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        idField.setDisabledTextColor(Color.darkGray);
-        add(idField);
+        return label;
     }
 
-    private void dateCreatorUI(String date) {
-        dateLabel = new JLabel("Fecha: ");
-        dateLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(dateLabel);
-
-        dateField = new JTextField(date);
-        dateField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
+    private JTextField fieldCreator(String fieldInformation) {
+        JTextField textField = new JTextField(fieldInformation);
+        textField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
                 FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        dateField.setEnabled(false);
-        dateField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        dateField.setDisabledTextColor(Color.darkGray);
-        add(dateField);
-    }
-
-    private void transactionTypeCreatorUI(String transactionType) {
-        typeLabel = new JLabel("Tipo: ");
-        typeLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(typeLabel);
-
-        typeField = new JTextField(transactionType);
-        typeField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        typeField.setEnabled(false);
-        typeField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        typeField.setDisabledTextColor(Color.darkGray);
-        add(typeField);
-    }
-
-    private void amountCreationUI(String amount) {
-        amountLabel = new JLabel("Cantidad: ");
-        amountLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(amountLabel);
-
-        amountField = new JTextField(amount);
-        amountField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        amountField.setEnabled(false);
-        amountField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        amountField.setDisabledTextColor(Color.darkGray);
-        add(amountField);
-    }
-
-    private void currencyCreatorIU(String currency) {
-        currencyLabel = new JLabel("Moneda: ");
-        currencyLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(currencyLabel);
-
-        currencyField = new JTextField(currency);
-        currencyField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        currencyField.setEnabled(false);
-        currencyField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        currencyField.setDisabledTextColor(Color.darkGray);
-        add(currencyField);
-    }
-
-    private void accountFromCreatorUI(String accountFrom) {
-        accountFromLabel = new JLabel("Cuenta Debitada: ");
-        accountFromLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(accountFromLabel);
-
-        accountFromField = new JTextField(accountFrom);
-        accountFromField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        accountFromField.setEnabled(false);
-        accountFromField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        accountFromField.setDisabledTextColor(Color.darkGray);
-        add(accountFromField);
-    }
-
-    private void accountToCreatorUI(String accountTo) {
-        accountToLabel = new JLabel("Cuenta Destinataria:");
-        accountToLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(accountToLabel);
-
-        accountToField = new JTextField(accountTo);
-        accountToField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition, 300, 25);
-        accountToField.setEnabled(false);
-        accountToField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        accountToField.setDisabledTextColor(Color.darkGray);
-        add(accountToField);
-    }
-
-    private void statusCreatorUI(String status) {
-        statusLabel = new JLabel("Estado: ");
-        statusLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        add(statusLabel);
-
-        statusField = new JTextField(status);
-        statusField.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
-        statusField.setEnabled(false);
-        statusField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
-        statusField.setDisabledTextColor(Color.darkGray);
-        add(statusField);
+        textField.setEnabled(false);
+        textField.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
+        textField.setDisabledTextColor(Color.darkGray);
+        return textField;
     }
 
     private void descriptionCreatorUI(String description) {
