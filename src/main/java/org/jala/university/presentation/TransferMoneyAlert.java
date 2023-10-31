@@ -1,26 +1,35 @@
 package org.jala.university.presentation;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class TransferMoneyAlert {
 
-  public void transferMoney(double MAX_TRANSFER_AMOUNT,double amount){
+  public void transferMoney(double maxTransferAmount, double amount){
     boolean confirmed = showConfirmationDialog(amount);
-    if (amount <= MAX_TRANSFER_AMOUNT) {
+    if (amount > maxTransferAmount) {
+      showErrorMessage(maxTransferAmount);
+    } else {
       if (confirmed) {
         showSuccessMessage();
       } else {
-        showCancelledMessage(MAX_TRANSFER_AMOUNT);
+        showCancelledMessage();
       }
-    } else {
-      showCancelledMessage(MAX_TRANSFER_AMOUNT);
     }
+  }
+
+  private void showErrorMessage(double MAX_TRANSFER_AMOUNT) {
+    JOptionPane.showMessageDialog(
+            null,
+            "El monto a transferir es mayor que el monto máximo permitido de " + MAX_TRANSFER_AMOUNT + ".",
+            "Error de Transferencia",
+            JOptionPane.ERROR_MESSAGE
+    );
   }
 
   private boolean showConfirmationDialog(double amount) {
     String message = "<html><body>" +
-            "<p>Are you sure you want to transfer $" + amount + "?</p>" +
-            "<p style='font-size:12px;color:gray;'>Note: Transferring large amounts of money may incur additional fees.</p>" +
+            "<p>¿Estás seguro de que quieres transferir $" + amount + "?</p>" +
+            "<p style='font-size:12px;color:gray;'Nota: Transferir grandes cantidades de dinero puede generar cargos adicionales.</p>" +
             "</body></html>";
 
     int confirm = JOptionPane.showConfirmDialog(
@@ -38,16 +47,16 @@ public class TransferMoneyAlert {
   private void showSuccessMessage() {
     JOptionPane.showMessageDialog(
             null,
-            "Your money has been transferred successfully.",
-            "Transfer Money",
+            "El monto ha sido transferido exitosamente.",
+            "Transferencia Exitosa",
             JOptionPane.INFORMATION_MESSAGE
     );
   }
 
-  private void showCancelledMessage(double MAX_TRANSFER_AMOUNT) {
+  private void showCancelledMessage() {
     JOptionPane.showMessageDialog(
             null,
-            "The transaction has been cancelled. You can only transfer up to " +  MAX_TRANSFER_AMOUNT + ".",
+            "The transaction has been cancelled.",
             "Transaction Cancelled",
             JOptionPane.INFORMATION_MESSAGE
     );
