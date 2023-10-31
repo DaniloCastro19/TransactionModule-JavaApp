@@ -4,14 +4,12 @@ import org.jala.university.model.Account;
 import org.jala.university.model.Currency;
 import org.jala.university.model.TransactionStatus;
 import org.jala.university.model.TransactionType;
-import org.junit.Test;
 
 import java.util.Date;
 import java.util.UUID;
 
-public class TransactionSummaryViewTest {
-    @Test
-    public void initTransactionSummaryViewTest() {
+public class TransactionModuleMain {
+    public static void main(String[] args) {
         TransactionModuleValues values = new TransactionModuleValues();
 
         values.setId(UUID.randomUUID());
@@ -26,10 +24,5 @@ public class TransactionSummaryViewTest {
 
         TransactionSummaryView window = new TransactionSummaryView(values);
         window.setVisible(true);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
