@@ -28,6 +28,28 @@ public class TransactionSummaryView extends JFrame {
     private final int LABEL_FIELD_STANDARD_HEIGHT = 25;
     private int labelAndFieldVerticalPosition;
 
+
+    // Member variables for labels and text fields.
+    private JLabel idLabel;
+    private JLabel dateLabel;
+    private JLabel typeLabel;
+    private JLabel amountLabel;
+    private JLabel currencyLabel;
+    private JLabel accountFromLabel;
+    private JLabel accountToLabel;
+    private JLabel statusLabel;
+    private JLabel descriptionLabel;
+
+    private JTextField idField;
+    private JTextField dateField;
+    private JTextField typeField;
+    private JTextField amountField;
+    private JTextField currencyField;
+    private JTextField accountFromField;
+    private JTextField accountToField;
+    private JTextField statusField;
+    private JTextArea descriptionArea;
+
     /**
      * Constructor for the TransactionSummaryView class.
      *
@@ -151,25 +173,4 @@ public class TransactionSummaryView extends JFrame {
         descriptionArea.setWrapStyleWord(true);
         add(descriptionArea);
     }
-
-    // Member variables for labels and text fields.
-    private JLabel idLabel;
-    private JLabel dateLabel;
-    private JLabel typeLabel;
-    private JLabel amountLabel;
-    private JLabel currencyLabel;
-    private JLabel accountFromLabel;
-    private JLabel accountToLabel;
-    private JLabel statusLabel;
-    private JLabel descriptionLabel;
-
-    private JTextField idField;
-    private JTextField dateField;
-    private JTextField typeField;
-    private JTextField amountField;
-    private JTextField currencyField;
-    private JTextField accountFromField;
-    private JTextField accountToField;
-    private JTextField statusField;
-    private JTextArea descriptionArea;
 }
