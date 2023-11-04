@@ -1,18 +1,26 @@
 package org.jala.university.view;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JTextArea;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 
 public class ChequeView extends JFrame {
-    private JTextField nombreField;
-    private JTextField montoField;
-    private JTextField motivoField;
-    private JComboBox<String> tipoMonedaComboBox;
-    private JButton generarChequeButton;
-    private JButton imprimirChequeButton;
-    private JTextArea resultadoArea;
-    private JLabel fechaHoraGeneracionLabel;
+    private JTextField nameFiled;
+    private JTextField ammountField;
+    private JTextField reasonField;
+    private JComboBox<String> currencyComboBox;
+    private JButton generateCheckButton;
+    private JButton printCheckButton;
+    private JTextArea resultArea;
+    private JLabel timeDateGenerationLabel;
     private boolean fechaHoraVisible = false;
 
     public ChequeView() {
@@ -26,116 +34,116 @@ public class ChequeView extends JFrame {
         c.insets = new Insets(5, 5, 5, 5);
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        nombreField = new JTextField(20);
+        nameFiled = new JTextField(20);
 
         JLabel montoLabel = new JLabel("Monto:");
-        montoField = new JTextField(20);
+        ammountField = new JTextField(20);
 
         JLabel motivoLabel = new JLabel("Motivo:");
-        motivoField = new JTextField(20);
+        reasonField = new JTextField(20);
 
         JLabel tipoMonedaLabel = new JLabel("Tipo de Moneda:");
         String[] monedas = {"Dollar", "Euro", "Bolivianos"};
-        tipoMonedaComboBox = new JComboBox<>(monedas);
+        currencyComboBox = new JComboBox<>(monedas);
 
-        generarChequeButton = new JButton("Generar Cheque");
-        imprimirChequeButton = new JButton("Imprimir Cheque");
+        generateCheckButton = new JButton("Generar Cheque");
+        printCheckButton = new JButton("Imprimir Cheque");
 
-        fechaHoraGeneracionLabel = new JLabel("Fecha y Hora de Generación:");
-        fechaHoraGeneracionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        fechaHoraGeneracionLabel.setVisible(fechaHoraVisible);
+        timeDateGenerationLabel = new JLabel("Fecha y Hora de Generación:");
+        timeDateGenerationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timeDateGenerationLabel.setVisible(fechaHoraVisible);
 
-        resultadoArea = new JTextArea(5, 20);
-        resultadoArea.setEditable(false);
+        resultArea = new JTextArea(5, 20);
+        resultArea.setEditable(false);
 
         c.gridx = 0;
         c.gridy = 0;
         panel.add(nombreLabel, c);
 
         c.gridx = 1;
-        panel.add(nombreField, c);
+        panel.add(nameFiled, c);
 
         c.gridx = 0;
         c.gridy = 1;
         panel.add(montoLabel, c);
 
         c.gridx = 1;
-        panel.add(montoField, c);
+        panel.add(ammountField, c);
 
         c.gridx = 0;
         c.gridy = 2;
         panel.add(motivoLabel, c);
 
         c.gridx = 1;
-        panel.add(motivoField, c);
+        panel.add(reasonField, c);
 
         c.gridx = 0;
         c.gridy = 3;
         panel.add(tipoMonedaLabel, c);
 
         c.gridx = 1;
-        panel.add(tipoMonedaComboBox, c);
+        panel.add(currencyComboBox, c);
 
         c.gridx = 0;
         c.gridy = 4;
         c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(generarChequeButton, c);
+        panel.add(generateCheckButton, c);
 
         c.gridx = 0;
         c.gridy = 5;
-        panel.add(imprimirChequeButton, c);
+        panel.add(printCheckButton, c);
 
         c.gridx = 0;
         c.gridy = 6;
         c.gridwidth = 2;
-        panel.add(fechaHoraGeneracionLabel, c);
+        panel.add(timeDateGenerationLabel, c);
 
         c.gridx = 0;
         c.gridy = 7;
         c.gridwidth = 2;
         c.fill = GridBagConstraints.BOTH;
-        panel.add(resultadoArea, c);
+        panel.add(resultArea, c);
 
         getContentPane().add(panel);
 
         setLocationRelativeTo(null);
     }
 
-    public String getNombre() {
-        return nombreField.getText();
+    public String getName() {
+        return nameFiled.getText();
     }
 
-    public double getMonto() {
-        return Double.parseDouble(montoField.getText());
+    public double getAmount() {
+        return Double.parseDouble(ammountField.getText());
     }
 
-    public String getMotivo() {
-        return motivoField.getText();
+    public String getReason() {
+        return reasonField.getText();
     }
 
-    public String getTipoMoneda() {
-        return tipoMonedaComboBox.getSelectedItem().toString();
+    public String getCurrency() {
+        return currencyComboBox.getSelectedItem().toString();
     }
 
-    public void setGenerarChequeListener(ActionListener listener) {
-        generarChequeButton.addActionListener(e -> {
+    public void generateCheckListener(ActionListener listener) {
+        generateCheckButton.addActionListener(e -> {
             fechaHoraVisible = true;
-            fechaHoraGeneracionLabel.setVisible(fechaHoraVisible);
+            timeDateGenerationLabel.setVisible(fechaHoraVisible);
             listener.actionPerformed(e);
         });
     }
 
-    public void setImprimirChequeListener(ActionListener listener) {
-        imprimirChequeButton.addActionListener(listener);
+    public void printCheckListener(ActionListener listener) {
+        printCheckButton.addActionListener(listener);
     }
 
-    public void mostrarFechaHoraGeneracion(String fechaHoraGeneracion) {
-        fechaHoraGeneracionLabel.setText("Fecha y Hora de Generación: " + fechaHoraGeneracion);
+    public void showTimeDateListener(String fechaHoraGeneracion) {
+        timeDateGenerationLabel.setText("Fecha y Hora de Generación: " + fechaHoraGeneracion);
     }
 
-    public void mostrarResultado(String resultado) {
-        resultadoArea.setText(resultado);
+    public void showResult(String resultado) {
+        resultArea.setText(resultado);
     }
 }
 

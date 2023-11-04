@@ -1,10 +1,8 @@
 package org.jala.university.controller;
-
-
 import org.jala.university.model.ChequeModel;
 import org.jala.university.view.ChequeView;
-
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -19,37 +17,37 @@ public class ChequeController {
         this.view = view;
         this.model = model;
 
-        view.setGenerarChequeListener(new GenerarChequeListener());
-        view.setImprimirChequeListener(new ImprimirChequeListener());
+        view.generateCheckListener(new GenerarChequeListener());
+        view.printCheckListener(new ImprimirChequeListener());
     }
 
     private class GenerarChequeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String nombre = view.getNombre();
-            double monto = 0;
-            String motivo = view.getMotivo();
-            String tipoMoneda = view.getTipoMoneda();
+            String name = view.getName();
+            double amount = 0;
+            String reason = view.getReason();
+            String currency = view.getCurrency();
 
             try {
-                monto = view.getMonto();
+                amount = view.getAmount();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(view, "Ingrese un monto válido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            if (nombre.isEmpty() || motivo.isEmpty() || tipoMoneda.isEmpty()) {
+            if (name.isEmpty() || reason.isEmpty() || currency.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 int confirm = JOptionPane.showConfirmDialog(view, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
                 if (confirm == JOptionPane.OK_OPTION) {
-                    model.setNombre(nombre);
-                    model.setMonto(monto);
-                    model.setMotivo(motivo);
-                    model.setTipoMoneda(tipoMoneda);
-                    String fechaHoraGeneracion = obtenerFechaHoraActual();
-                    model.setFechaHoraGeneracion(fechaHoraGeneracion);
-                    view.mostrarFechaHoraGeneracion(fechaHoraGeneracion);
+                    model.setName(name);
+                    model.setAmount(amount);
+                    model.setReason(reason);
+                    model.setCurrency(currency);
+                    String timeDateGeneration = getCurrentDateTime();
+                    model.setTimeDateGenerationLabel(timeDateGeneration);
+                    view.showTimeDateListener(timeDateGeneration);
                 }
             }
         }
@@ -58,41 +56,40 @@ public class ChequeController {
     private class ImprimirChequeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            StringBuilder resultado = new StringBuilder();
-            resultado.append("Número de Cheque: ").append(obtenerNumeroChequeAleatorio()).append("\n");
-            resultado.append("Nombre: ").append(model.getNombre()).append("\n");
-            resultado.append("Monto: ").append(model.getMonto()).append("\n");
-            resultado.append("Motivo: ").append(model.getMotivo()).append("\n");
-            resultado.append("Tipo de Moneda: ").append(model.getTipoMoneda()).append("\n");
-            resultado.append("Fecha y Hora de Generación: ").append(model.getFechaHoraGeneracion()).append("\n");
+            StringBuilder result = new StringBuilder();
+            result.append("Número de Cheque: ").append(getRandomCheckNumber()).append("\n");
+            result.append("nombre: ").append(model.getName()).append("\n");
+            result.append("Monto: ").append(model.getAmount()).append("\n");
+            result.append("Motivo: ").append(model.getReason()).append("\n");
+            result.append("Tipo de Moneda: ").append(model.getCurrency()).append("\n");
 
-            view.mostrarResultado(resultado.toString());
+            view.showResult(result.toString());
 
-            JOptionPane.showMessageDialog(view, resultado.toString(), "Imprimiendo Cheque", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(view, result.toString(), "Imprimiendo Cheque", JOptionPane.INFORMATION_MESSAGE);
 
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(view, "Cheque impreso\n\n" + resultado.toString(), "Completado", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(view, "Cheque impreso\n\n" + result.toString(), "Completado", JOptionPane.INFORMATION_MESSAGE);
                     });
                 }
             }, 3000); // 3000 milisegundos = 3 segundos
         }
     }
 
-    private String obtenerFechaHoraActual() {
+    private String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         java.util.Date date = new java.util.Date();
         return sdf.format(date);
     }
 
-    public void iniciar() {
+    public void start() {
         view.setVisible(true);
     }
 
-    private int obtenerNumeroChequeAleatorio() {
+    private int getRandomCheckNumber() {
         return (int) (Math.random() * 1000);
     }
 
@@ -101,7 +98,7 @@ public class ChequeController {
             ChequeModel model = new ChequeModel();
             ChequeView view = new ChequeView();
             ChequeController controller = new ChequeController(view, model);
-            controller.iniciar();
+            controller.start();
         });
     }
 }

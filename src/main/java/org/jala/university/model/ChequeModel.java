@@ -1,53 +1,53 @@
 package org.jala.university.model;
 
 public class ChequeModel {
-    private String nombre;
-    private double monto;
-    private String motivo;
-    private String tipoMoneda;
-    private String fechaHoraGeneracion;
+    private String name;
+    private double amount;
+    private String reason;
+    private String currency;
+    private String timeDateGenerationLabel;
 
     public ChequeModel() {
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public double getMonto() {
-        return monto;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setMonto(double monto) {
-        this.monto = monto;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
-    public String getMotivo() {
-        return motivo;
+    public String getReason() {
+        return reason;
     }
 
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
-    public String getTipoMoneda() {
-        return tipoMoneda;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setTipoMoneda(String tipoMoneda) {
-        this.tipoMoneda = tipoMoneda;
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
-    public String getFechaHoraGeneracion() {
-        return fechaHoraGeneracion;
+    public String getTimeDateGenerationLabel() {
+        return timeDateGenerationLabel;
     }
 
-    public void setFechaHoraGeneracion(String fechaHoraGeneracion) {
-        this.fechaHoraGeneracion = fechaHoraGeneracion;
+    public void setTimeDateGenerationLabel(String timeDateGenerationLabel) {
+        this.timeDateGenerationLabel = timeDateGenerationLabel;
     }
 }
 
