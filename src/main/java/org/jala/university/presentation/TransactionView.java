@@ -15,7 +15,6 @@ public class TransactionView extends JFrame {
 
     public TransactionView(TransactionModule transactionModule) {
         this.transactionModule = transactionModule;
-
         setTitle("Account Module");
         setSize(500, 500);
         setBackground(Color.gray);
