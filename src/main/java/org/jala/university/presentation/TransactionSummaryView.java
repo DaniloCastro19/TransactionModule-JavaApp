@@ -30,24 +30,24 @@ public class TransactionSummaryView extends JFrame {
 
 
     // Member variables for labels and text fields.
-    private JLabel idLabel;
-    private JLabel dateLabel;
-    private JLabel typeLabel;
-    private JLabel amountLabel;
-    private JLabel currencyLabel;
-    private JLabel accountFromLabel;
-    private JLabel accountToLabel;
-    private JLabel statusLabel;
+    private final JLabel idLabel;
+    private final JLabel dateLabel;
+    private final JLabel typeLabel;
+    private final JLabel amountLabel;
+    private final JLabel currencyLabel;
+    private final JLabel accountFromLabel;
+    private final JLabel accountToLabel;
+    private final JLabel statusLabel;
     private JLabel descriptionLabel;
 
-    private JTextField idField;
-    private JTextField dateField;
-    private JTextField typeField;
-    private JTextField amountField;
-    private JTextField currencyField;
-    private JTextField accountFromField;
-    private JTextField accountToField;
-    private JTextField statusField;
+    private final JTextField idField;
+    private final JTextField dateField;
+    private final JTextField typeField;
+    private final JTextField amountField;
+    private final JTextField currencyField;
+    private final JTextField accountFromField;
+    private final JTextField accountToField;
+    private final JTextField statusField;
     private JTextArea descriptionArea;
 
     /**
