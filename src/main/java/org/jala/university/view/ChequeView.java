@@ -1,12 +1,8 @@
 package org.jala.university.view;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import org.jala.university.Utils.Validator.InputValidator;
+
+import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -14,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class ChequeView extends JFrame {
     private JTextField nameFiled;
-    private JTextField ammountField;
+    private JTextField amountField;
     private JTextField reasonField;
     private JComboBox<String> currencyComboBox;
     private JButton generateCheckButton;
@@ -37,7 +33,7 @@ public class ChequeView extends JFrame {
         nameFiled = new JTextField(20);
 
         JLabel montoLabel = new JLabel("Monto:");
-        ammountField = new JTextField(20);
+        amountField = new JTextField(20);
 
         JLabel motivoLabel = new JLabel("Motivo:");
         reasonField = new JTextField(20);
@@ -68,7 +64,7 @@ public class ChequeView extends JFrame {
         panel.add(montoLabel, c);
 
         c.gridx = 1;
-        panel.add(ammountField, c);
+        panel.add(amountField, c);
 
         c.gridx = 0;
         c.gridy = 2;
@@ -105,6 +101,9 @@ public class ChequeView extends JFrame {
         c.fill = GridBagConstraints.BOTH;
         panel.add(resultArea, c);
 
+        setupDocumentFilters(nameFiled, "alphaWithSpaces");
+        setupDocumentFilters(amountField, "numericOrDecimal");
+        setupDocumentFilters(reasonField, "alphaWithSpaces");
         getContentPane().add(panel);
 
         setLocationRelativeTo(null);
@@ -115,7 +114,7 @@ public class ChequeView extends JFrame {
     }
 
     public double getAmount() {
-        return Double.parseDouble(ammountField.getText());
+        return Double.parseDouble(amountField.getText());
     }
 
     public String getReason() {
@@ -134,6 +133,48 @@ public class ChequeView extends JFrame {
         });
     }
 
+    private boolean areEmptyFields(){
+        return !nameFiled.getText().isEmpty() &&
+                !amountField.getText().isEmpty() &&
+                !reasonField.getText().isEmpty();
+
+    }
+
+    private boolean areValidInputs(String input, String validationType){
+        switch (validationType) {
+            case "numeric":
+                return InputValidator.isNumeric(input);
+            case "numericOrDecimal":
+                return InputValidator.isNumericOrDecimal(input);
+            case "alphaWithSpaces":
+                return InputValidator.isAlphaWithSpaces(input);
+            default:
+                return false;
+        }
+
+    }
+    private void setupDocumentFilters(JTextField textField, String validationType) {
+        Document doc = textField.getDocument();
+        if (doc instanceof PlainDocument) {
+            ((PlainDocument) doc).setDocumentFilter(new DocumentFilter() {
+                @Override
+                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                    if (areValidInputs(string, validationType)) {
+                        super.insertString(fb, offset, string, attr);
+                    }
+                }
+                @Override
+                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                    if (areValidInputs(text, validationType)) {
+                        super.replace(fb, offset, length, text, attrs);
+                    }
+                }
+            });
+        }
+    }
+
+
+
     public void printCheckListener(ActionListener listener) {
         printCheckButton.addActionListener(listener);
     }
@@ -145,5 +186,13 @@ public class ChequeView extends JFrame {
     public void showResult(String resultado) {
         resultArea.setText(resultado);
     }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ChequeView formView = new ChequeView();
+            formView.setVisible(true);
+        });
+    }
+
+
 }
 
