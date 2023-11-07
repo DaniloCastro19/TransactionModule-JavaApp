@@ -197,13 +197,5 @@ public class ChequeView extends JFrame {
     public void showResult(String resultado) {
         resultArea.setText(resultado);
     }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ChequeView formView = new ChequeView();
-            formView.setVisible(true);
-        });
-    }
-
-
 }
 
