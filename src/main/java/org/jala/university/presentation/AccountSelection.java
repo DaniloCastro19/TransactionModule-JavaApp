@@ -1,6 +1,7 @@
 package org.jala.university.presentation;
 
 import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.UserModule;
 import org.jala.university.model.BankUser;
 
 import javax.swing.JFrame;
@@ -26,9 +27,9 @@ import java.util.List;
         private JTextField searchInput;
         private JButton searchButton;
         private JTable table;
-        private TransactionModule module;
+        private UserModule module;
 
-        public AccountSelection(TransactionModule module) {
+        public AccountSelection(UserModule module) {
             this.module = module;
 
             initializeUI();

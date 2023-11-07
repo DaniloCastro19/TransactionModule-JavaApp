@@ -2,6 +2,7 @@ package org.jala.university.resources;
 import org.jala.university.dao.AccountDAO;
 import org.jala.university.dao.TransactionDAO;
 import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.UserModule;
 import org.jala.university.model.Account;
 import org.jala.university.model.Transaction;
 
@@ -19,11 +20,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionService {
 
-    private TransactionModule module;
+    private TransactionModule transactionModule;
+    private UserModule userModule;
 
     @Autowired
-    public TransactionService(TransactionModule module) {
-        this.module = module;
+    public TransactionService(TransactionModule transactionModule, UserModule userModule) {
+        this.transactionModule = transactionModule;
+        this.userModule = userModule;
     }
 
     /**
@@ -39,10 +42,10 @@ public class TransactionService {
      */
     @Transactional
     public void deposit(UUID recipientAccountID, Long amount, String description, Currency currency, Date date) {
-        Account recipientAccount = module.findUserById(recipientAccountID);
+        Account recipientAccount = userModule.findUserById(recipientAccountID);
 
         recipientAccount.setBalance(recipientAccount.getBalance()+amount);
-        module.update(recipientAccount);
+        userModule.update(recipientAccount);
 
         Transaction depositTransaction = Transaction.builder()
                 .id(UUID.randomUUID())
@@ -55,7 +58,7 @@ public class TransactionService {
                 .description(description)
                 .build();
 
-        module.depositTransaction(depositTransaction);
+        transactionModule.depositTransaction(depositTransaction);
     }
 
 }
