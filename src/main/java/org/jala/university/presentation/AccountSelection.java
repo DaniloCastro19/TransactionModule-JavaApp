@@ -1,7 +1,7 @@
 package org.jala.university.presentation;
 
+import org.jala.university.domain.TransactionModule;
 import org.jala.university.model.BankUser;
-import org.jala.university.services.TransactionModule;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;

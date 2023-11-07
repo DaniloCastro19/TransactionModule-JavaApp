@@ -1,6 +1,7 @@
 package org.jala.university.resources;
 import org.jala.university.dao.AccountDAO;
 import org.jala.university.dao.TransactionDAO;
+import org.jala.university.domain.TransactionModule;
 import org.jala.university.model.Account;
 import org.jala.university.model.Transaction;
 
@@ -18,13 +19,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionService {
 
-    private final AccountDAO accountDAO;
-    private final TransactionDAO transactionDAO;
+    private TransactionModule module;
 
     @Autowired
-    public TransactionService(AccountDAO accountDAO, TransactionDAO transactionDAO) {
-        this.accountDAO = accountDAO;
-        this.transactionDAO = transactionDAO;
+    public TransactionService(TransactionModule module) {
+        this.module = module;
     }
 
     /**
@@ -37,28 +36,26 @@ public class TransactionService {
      * @param description       a description of the transaction for record-keeping purposes
      * @param currency          the currency in which the deposit is made
      * @param date              the date when the transaction is to be executed
-     * @return                  a {@link Transaction} object that represents the completed deposit transaction
      */
     @Transactional
-    public Transaction deposit(UUID recipientAccountID, Long amount, String description, Currency currency, Date date) {
-        Account recipientAccount = accountDAO.findOne(recipientAccountID);
+    public void deposit(UUID recipientAccountID, Long amount, String description, Currency currency, Date date) {
+        Account recipientAccount = module.findUserById(recipientAccountID);
 
         recipientAccount.setBalance(recipientAccount.getBalance()+amount);
-        accountDAO.update(recipientAccount);
+        module.update(recipientAccount);
 
-        Transaction depostitTransaction = new Transaction();
-        depostitTransaction.setId(UUID.randomUUID());
-        depostitTransaction.setDate(date);
-        depostitTransaction.setType(TransactionType.DEPOSIT);
-        depostitTransaction.setAmount(amount);
-        depostitTransaction.setCurrency(currency);
-        depostitTransaction.setAccountTo(recipientAccount);
-        depostitTransaction.setStatus(TransactionStatus.COMPLETED);
-        depostitTransaction.setDescription(description);
+        Transaction depositTransaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(date)
+                .type(TransactionType.DEPOSIT)
+                .amount(amount)
+                .currency(currency)
+                .accountTo(recipientAccount)
+                .status(TransactionStatus.COMPLETED)
+                .description(description)
+                .build();
 
-        transactionDAO.create(depostitTransaction);
-
-        return depostitTransaction;
+        module.depositTransaction(depositTransaction);
     }
 
 }
