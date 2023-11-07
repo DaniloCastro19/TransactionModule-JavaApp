@@ -17,7 +17,7 @@ public class ChequeView extends JFrame {
     private JButton printCheckButton;
     private JTextArea resultArea;
     private JLabel timeDateGenerationLabel;
-    private boolean fechaHoraVisible = false;
+    private boolean dateTimeVisible = false;
 
     public ChequeView() {
         setTitle("Emitir Cheques");
@@ -47,7 +47,7 @@ public class ChequeView extends JFrame {
 
         timeDateGenerationLabel = new JLabel("Fecha y Hora de Generación:");
         timeDateGenerationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        timeDateGenerationLabel.setVisible(fechaHoraVisible);
+        timeDateGenerationLabel.setVisible(dateTimeVisible);
 
         resultArea = new JTextArea(5, 20);
         resultArea.setEditable(false);
@@ -127,8 +127,8 @@ public class ChequeView extends JFrame {
 
     public void generateCheckListener(ActionListener listener) {
         generateCheckButton.addActionListener(e -> {
-            fechaHoraVisible = true;
-            timeDateGenerationLabel.setVisible(fechaHoraVisible);
+            dateTimeVisible = true;
+            timeDateGenerationLabel.setVisible(dateTimeVisible);
             listener.actionPerformed(e);
         });
     }
@@ -179,8 +179,8 @@ public class ChequeView extends JFrame {
         printCheckButton.addActionListener(listener);
     }
 
-    public void showTimeDateListener(String fechaHoraGeneracion) {
-        timeDateGenerationLabel.setText("Fecha y Hora de Generación: " + fechaHoraGeneracion);
+    public void showTimeDateListener(String dateTimeGeneration) {
+        timeDateGenerationLabel.setText("Fecha y Hora de Generación: " + dateTimeGeneration);
     }
 
     public void showResult(String resultado) {

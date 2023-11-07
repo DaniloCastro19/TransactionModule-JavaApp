@@ -1,4 +1,5 @@
 package org.jala.university.controller;
+
 import org.jala.university.model.ChequeModel;
 import org.jala.university.view.ChequeView;
 import javax.swing.JOptionPane;
