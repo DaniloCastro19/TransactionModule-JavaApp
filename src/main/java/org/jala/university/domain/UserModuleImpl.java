@@ -18,7 +18,7 @@ public class UserModuleImpl implements  UserModule{
     }
     @Override
     public List<BankUser> findUsersByAccountNumber(String accountNumber) {
-        return accountDAO.findUsersByAccountNumber(accountNumber);
+        return userDAO.findUsersByAccountNumber(accountNumber);
     }
 
     @Override
