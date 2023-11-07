@@ -1,4 +1,4 @@
-package org.jala.university.resources;
+package org.jala.university.domain;
 import org.jala.university.dao.AccountDAO;
 import org.jala.university.dao.TransactionDAO;
 import org.jala.university.domain.TransactionModule;
