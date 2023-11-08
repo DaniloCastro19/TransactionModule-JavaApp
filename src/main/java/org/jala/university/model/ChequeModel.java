@@ -15,7 +15,13 @@ public class ChequeModel {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (isValidName(name)) {
+            this.name = name;
+        }
+    }
+
+    private boolean isValidName(String name) {
+        return name.matches("^[a-zA-Z]+$");
     }
 
     public double getAmount() {
@@ -50,4 +56,3 @@ public class ChequeModel {
         this.timeDateGenerationLabel = timeDateGenerationLabel;
     }
 }
-

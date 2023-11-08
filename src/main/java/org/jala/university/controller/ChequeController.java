@@ -30,6 +30,11 @@ public class ChequeController {
             String reason = view.getReason();
             String currency = view.getCurrency();
 
+            if (!isValidName(name)) {
+                JOptionPane.showMessageDialog(view, "El nombre no es válido. Debe contener solo letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             try {
                 amount = view.getAmount();
             } catch (NumberFormatException ex) {
@@ -51,6 +56,10 @@ public class ChequeController {
                     view.showTimeDateListener(timeDateGeneration);
                 }
             }
+        }
+
+        private boolean isValidName(String name) {
+            return name.matches("^[a-zA-Z ]*$");
         }
     }
 

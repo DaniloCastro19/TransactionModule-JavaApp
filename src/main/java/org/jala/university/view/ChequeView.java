@@ -1,26 +1,30 @@
 package org.jala.university.view;
-import org.jala.university.Utils.Validator.InputValidator;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
+
+import org.jala.university.Utils.Validator.DecimalValidator;
+import org.jala.university.Utils.Validator.StringValidator;
+import org.jala.university.Utils.Validator.Validator;
+
+
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
 public class ChequeView extends JFrame {
-    private JTextField nameFiled;
+    private JTextField nameField;
     private JTextField amountField;
     private JTextField reasonField;
     private JComboBox<String> currencyComboBox;
@@ -41,7 +45,7 @@ public class ChequeView extends JFrame {
         c.insets = new Insets(5, 5, 5, 5);
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        nameFiled = new JTextField(20);
+        nameField = new JTextField(20);
 
         JLabel montoLabel = new JLabel("Monto:");
         amountField = new JTextField(20);
@@ -68,7 +72,7 @@ public class ChequeView extends JFrame {
         panel.add(nombreLabel, c);
 
         c.gridx = 1;
-        panel.add(nameFiled, c);
+        panel.add(nameField, c);
 
         c.gridx = 0;
         c.gridy = 1;
@@ -112,16 +116,16 @@ public class ChequeView extends JFrame {
         c.fill = GridBagConstraints.BOTH;
         panel.add(resultArea, c);
 
-        setupDocumentFilters(nameFiled, "alphaWithSpaces");
-        setupDocumentFilters(amountField, "numericOrDecimal");
-        setupDocumentFilters(reasonField, "alphaWithSpaces");
+        setupDocumentFilters(nameField, new StringValidator());
+        setupDocumentFilters(amountField, new DecimalValidator());
+        setupDocumentFilters(reasonField, new StringValidator());
         getContentPane().add(panel);
 
         setLocationRelativeTo(null);
     }
 
     public String getName() {
-        return nameFiled.getText();
+        return nameField.getText();
     }
 
     public double getAmount() {
@@ -144,47 +148,32 @@ public class ChequeView extends JFrame {
         });
     }
 
-    private boolean areEmptyFields(){
-        return !nameFiled.getText().isEmpty() &&
+    private boolean areEmptyFields() {
+        return !nameField.getText().isEmpty() &&
                 !amountField.getText().isEmpty() &&
                 !reasonField.getText().isEmpty();
-
     }
 
-    private boolean areValidInputs(String input, String validationType){
-        switch (validationType) {
-            case "numeric":
-                return InputValidator.isNumeric(input);
-            case "numericOrDecimal":
-                return InputValidator.isNumericOrDecimal(input);
-            case "alphaWithSpaces":
-                return InputValidator.isAlphaWithSpaces(input);
-            default:
-                return false;
-        }
-
-    }
-    private void setupDocumentFilters(JTextField textField, String validationType) {
+    private void setupDocumentFilters(JTextField textField, Validator validator) {
         Document doc = textField.getDocument();
         if (doc instanceof PlainDocument) {
             ((PlainDocument) doc).setDocumentFilter(new DocumentFilter() {
                 @Override
                 public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                    if (areValidInputs(string, validationType)) {
+                    if (validator.validate(string)) {
                         super.insertString(fb, offset, string, attr);
                     }
                 }
+
                 @Override
                 public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                    if (areValidInputs(text, validationType)) {
+                    if (validator.validate(text)) {
                         super.replace(fb, offset, length, text, attrs);
                     }
                 }
             });
         }
     }
-
-
 
     public void printCheckListener(ActionListener listener) {
         printCheckButton.addActionListener(listener);
@@ -198,4 +187,3 @@ public class ChequeView extends JFrame {
         resultArea.setText(resultado);
     }
 }
-
