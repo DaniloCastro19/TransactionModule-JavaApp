@@ -1,7 +1,8 @@
 package org.jala.university.presentation;
 
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.UserModule;
 import org.jala.university.model.BankUser;
-import org.jala.university.services.TransactionModule;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,7 +70,7 @@ import java.util.List;
             searchPanel.add(searchOption);
             searchPanel.add(searchInput);
             searchPanel.add(searchButton);
-            add(searchPanel, BorderLayout.CENTER);
+            add(searchPanel, BorderLayout.SOUTH);
         }
 
 
