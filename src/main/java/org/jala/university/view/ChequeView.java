@@ -23,6 +23,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 
+/**
+ * View for the check issuance application.
+ */
 public class ChequeView extends JFrame {
     private JTextField nameField;
     private JTextField amountField;
@@ -33,6 +36,7 @@ public class ChequeView extends JFrame {
     private JTextArea resultArea;
     private JLabel timeDateGenerationLabel;
     private boolean dateTimeVisible = false;
+    private boolean isGenerateButtonClicked = false;
 
     public ChequeView() {
         setTitle("Emitir Cheques");
@@ -59,6 +63,7 @@ public class ChequeView extends JFrame {
 
         generateCheckButton = new JButton("Generar Cheque");
         printCheckButton = new JButton("Imprimir Cheque");
+        printCheckButton.setEnabled(false); // Deshabilitar inicialmente
 
         timeDateGenerationLabel = new JLabel("Fecha y Hora de Generación:");
         timeDateGenerationLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -140,11 +145,16 @@ public class ChequeView extends JFrame {
         return currencyComboBox.getSelectedItem().toString();
     }
 
+    /**
+     * Listener for the generate check button.
+     */
     public void generateCheckListener(ActionListener listener) {
         generateCheckButton.addActionListener(e -> {
             dateTimeVisible = true;
             timeDateGenerationLabel.setVisible(dateTimeVisible);
             listener.actionPerformed(e);
+            // Enable the print button after clicking "Generate Check" and passing validations.
+            printCheckButton.setEnabled(true);
         });
     }
 
@@ -183,7 +193,7 @@ public class ChequeView extends JFrame {
         timeDateGenerationLabel.setText("Fecha y Hora de Generación: " + dateTimeGeneration);
     }
 
-    public void showResult(String resultado) {
-        resultArea.setText(resultado);
+    public void showResult(String result) {
+        resultArea.setText(result);
     }
 }

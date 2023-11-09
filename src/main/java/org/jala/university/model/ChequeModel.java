@@ -1,5 +1,8 @@
 package org.jala.university.model;
 
+/**
+ * Model for the issuance of checks request.
+ */
 public class ChequeModel {
     private String name;
     private double amount;

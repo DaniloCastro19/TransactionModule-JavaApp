@@ -10,19 +10,32 @@ import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Controller for issuing checks.
+ */
 public class ChequeController {
     private ChequeView view;
     private ChequeModel model;
+    private double accountBalance = 2000; // Example: opening account balance.
 
     public ChequeController(ChequeView view, ChequeModel model) {
         this.view = view;
         this.model = model;
 
-        view.generateCheckListener(new GenerarChequeListener());
-        view.printCheckListener(new ImprimirChequeListener());
+        view.generateCheckListener(new GenerateCheckListener ());
+        view.printCheckListener(new PrintChequeListener());
     }
 
-    private class GenerarChequeListener implements ActionListener {
+    /**
+     * Listener for the generate check button.
+     */
+    private class GenerateCheckListener  implements ActionListener {
+
+        /**
+         * Invoked when the generate check button is clicked.
+         *
+         * @param e The action event.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             String name = view.getName();
@@ -45,25 +58,37 @@ public class ChequeController {
             if (name.isEmpty() || reason.isEmpty() || currency.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                int confirm = JOptionPane.showConfirmDialog(view, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-                if (confirm == JOptionPane.OK_OPTION) {
-                    model.setName(name);
-                    model.setAmount(amount);
-                    model.setReason(reason);
-                    model.setCurrency(currency);
-                    String timeDateGeneration = getCurrentDateTime();
-                    model.setTimeDateGenerationLabel(timeDateGeneration);
-                    view.showTimeDateListener(timeDateGeneration);
+                if (accountBalance >= amount) {
+                    int confirm = JOptionPane.showConfirmDialog(view, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+                    if (confirm == JOptionPane.OK_OPTION) {
+                        model.setName(name);
+                        model.setAmount(amount);
+                        model.setReason(reason);
+                        model.setCurrency(currency);
+                        String timeDateGeneration = getCurrentDateTime();
+                        model.setTimeDateGenerationLabel(timeDateGeneration);
+                        view.showTimeDateListener(timeDateGeneration);
+                        // Actualizar el saldo de la cuenta
+                        accountBalance -= amount;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(view, "Saldo insuficiente para generar el cheque.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
 
+        /**
+         * Checks if the entered name is valid (only letters).
+         *
+         * @param name The name to validate.
+         * @return True if the name is valid, false otherwise.
+         */
         private boolean isValidName(String name) {
             return name.matches("^[a-zA-Z ]*$");
         }
     }
 
-    private class ImprimirChequeListener implements ActionListener {
+    private class PrintChequeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             StringBuilder result = new StringBuilder();
@@ -85,7 +110,7 @@ public class ChequeController {
                         JOptionPane.showMessageDialog(view, "Cheque impreso\n\n" + result.toString(), "Completado", JOptionPane.INFORMATION_MESSAGE);
                     });
                 }
-            }, 3000); // 3000 milisegundos = 3 segundos
+            }, 3000); // 3000 milliseconds = 3 seconds.
         }
     }
 
