@@ -38,6 +38,7 @@ public class MockDataGenerator {
                     .build();
             accountDaoMock.create(account);
 
+            user.setAccount(account);
             for (int j = 1; j <= 3; j++) {
                 Transaction transaction = Transaction.builder()
                         .id(UUID.randomUUID())

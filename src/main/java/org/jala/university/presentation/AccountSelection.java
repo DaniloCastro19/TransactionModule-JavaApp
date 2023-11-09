@@ -1,7 +1,12 @@
 package org.jala.university.presentation;
 
+import org.jala.university.dao.*;
 import org.jala.university.domain.TransactionModule;
 import org.jala.university.domain.UserModule;
+import org.jala.university.domain.UserModuleImpl;
+import org.jala.university.domain.dao.AccountDaoMock;
+import org.jala.university.domain.services.AccountModule;
+import org.jala.university.domain.services.AccountModuleImpl;
 import org.jala.university.model.BankUser;
 
 import javax.swing.JFrame;
@@ -92,5 +97,17 @@ import java.util.List;
             tableModel.setUserList(userList);
             tableModel.fireTableDataChanged();
         }
+            public static void main(String[] args) {
+                UserDAOMock userDaoMock = new UserDAOMock();
+                AccountDAOMock accountDaoMock = new AccountDAOMock();
+                TransactionDAOMock transactionDaoMock = new TransactionDAOMock();
+
+                MockDataGenerator generator = new MockDataGenerator(userDaoMock, accountDaoMock, transactionDaoMock);
+                generator.generateMockData();
+
+                UserModule userModule = new UserModuleImpl(accountDaoMock, userDaoMock);
+                AccountSelection accountSelection = new AccountSelection(userModule);
+                accountSelection.setVisible(true);
+            }
     }
 
