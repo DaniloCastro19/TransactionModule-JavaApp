@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface TransactionModule {
     void depositTransaction(Transaction transaction);
+
+    List<Transaction> findTransactionsWithAccountNumber(String searchTerm);
 }
