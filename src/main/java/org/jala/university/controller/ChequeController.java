@@ -42,6 +42,7 @@ public class ChequeController {
             double amount = 0;
             String reason = view.getReason();
             String currency = view.getCurrency();
+            String accountNumber = view.getNumeroCuenta();
 
             if (!isValidName(name)) {
                 JOptionPane.showMessageDialog(view, "El nombre no es válido. Debe contener solo letras.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -55,12 +56,13 @@ public class ChequeController {
                 return;
             }
 
-            if (name.isEmpty() || reason.isEmpty() || currency.isEmpty()) {
+            if (accountNumber.isEmpty() || name.isEmpty() || reason.isEmpty() || currency.isEmpty()) {
                 JOptionPane.showMessageDialog(view, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 if (accountBalance >= amount) {
                     int confirm = JOptionPane.showConfirmDialog(view, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
                     if (confirm == JOptionPane.OK_OPTION) {
+                        model.setAccountNumber(accountNumber);
                         model.setName(name);
                         model.setAmount(amount);
                         model.setReason(reason);
@@ -93,7 +95,8 @@ public class ChequeController {
         public void actionPerformed(ActionEvent e) {
             StringBuilder result = new StringBuilder();
             result.append("Número de Cheque: ").append(getRandomCheckNumber()).append("\n");
-            result.append("nombre: ").append(model.getName()).append("\n");
+            result.append("N° de Cuenta de Origen: ").append(model.getAccountNumber()).append("\n");
+            result.append("Nombre del beneficiario: ").append(model.getName()).append("\n");
             result.append("Monto: ").append(model.getAmount()).append("\n");
             result.append("Motivo: ").append(model.getReason()).append("\n");
             result.append("Tipo de Moneda: ").append(model.getCurrency()).append("\n");
@@ -107,7 +110,7 @@ public class ChequeController {
                 @Override
                 public void run() {
                     SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(view, "Cheque impreso\n\n" + result.toString(), "Completado", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(view, "Cheque BANCARIO BOLIVIA.\n\n" + result.toString(), "Cheque impreso - Completado", JOptionPane.INFORMATION_MESSAGE);
                     });
                 }
             }, 3000); // 3000 milliseconds = 3 seconds.

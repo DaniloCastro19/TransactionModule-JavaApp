@@ -4,6 +4,7 @@ package org.jala.university.model;
  * Model for the issuance of checks request.
  */
 public class ChequeModel {
+    private String accountNumber;
     private String name;
     private double amount;
     private String reason;
@@ -11,6 +12,13 @@ public class ChequeModel {
     private String timeDateGenerationLabel;
 
     public ChequeModel() {
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getName() {

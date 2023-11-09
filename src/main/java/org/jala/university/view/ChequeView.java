@@ -1,6 +1,7 @@
 package org.jala.university.view;
 
 import org.jala.university.Utils.Validator.DecimalValidator;
+import org.jala.university.Utils.Validator.IntegerValidator;
 import org.jala.university.Utils.Validator.StringValidator;
 import org.jala.university.Utils.Validator.Validator;
 
@@ -27,6 +28,7 @@ import java.awt.event.ActionListener;
  * View for the check issuance application.
  */
 public class ChequeView extends JFrame {
+    private JTextField numberAccountField;
     private JTextField nameField;
     private JTextField amountField;
     private JTextField reasonField;
@@ -48,22 +50,25 @@ public class ChequeView extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
-        JLabel nombreLabel = new JLabel("Nombre:");
+        JLabel accountNumberLabel = new JLabel("N° de Cuenta de Origen:");
+        numberAccountField = new JTextField(20);
+
+        JLabel nameLabel = new JLabel("Nombre del beneficiario:");
         nameField = new JTextField(20);
 
-        JLabel montoLabel = new JLabel("Monto:");
+        JLabel amountLabel = new JLabel("Monto:");
         amountField = new JTextField(20);
 
-        JLabel motivoLabel = new JLabel("Motivo:");
+        JLabel reasonLabel = new JLabel("Motivo:");
         reasonField = new JTextField(20);
 
-        JLabel tipoMonedaLabel = new JLabel("Tipo de Moneda:");
-        String[] monedas = {"Dollar", "Euro", "Bolivianos"};
-        currencyComboBox = new JComboBox<>(monedas);
+        JLabel typeCurrencyLabel = new JLabel("Tipo de Moneda:");
+        String[] coins = {"Dollar", "Euro", "Bolivianos"};
+        currencyComboBox = new JComboBox<>(coins);
 
         generateCheckButton = new JButton("Generar Cheque");
         printCheckButton = new JButton("Imprimir Cheque");
-        printCheckButton.setEnabled(false); // Deshabilitar inicialmente
+        printCheckButton.setEnabled(false);
 
         timeDateGenerationLabel = new JLabel("Fecha y Hora de Generación:");
         timeDateGenerationLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -74,59 +79,72 @@ public class ChequeView extends JFrame {
 
         c.gridx = 0;
         c.gridy = 0;
-        panel.add(nombreLabel, c);
+        panel.add(accountNumberLabel, c);
+
+        c.gridx = 1;
+        panel.add(numberAccountField, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(nameLabel, c);
 
         c.gridx = 1;
         panel.add(nameField, c);
 
         c.gridx = 0;
-        c.gridy = 1;
-        panel.add(montoLabel, c);
+        c.gridy = 2;
+        panel.add(amountLabel, c);
 
         c.gridx = 1;
         panel.add(amountField, c);
 
         c.gridx = 0;
-        c.gridy = 2;
-        panel.add(motivoLabel, c);
+        c.gridy = 3;
+        panel.add(reasonLabel, c);
 
         c.gridx = 1;
         panel.add(reasonField, c);
 
         c.gridx = 0;
-        c.gridy = 3;
-        panel.add(tipoMonedaLabel, c);
+        c.gridy = 4;
+        panel.add(typeCurrencyLabel, c);
 
         c.gridx = 1;
         panel.add(currencyComboBox, c);
 
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
         panel.add(generateCheckButton, c);
 
         c.gridx = 0;
-        c.gridy = 5;
-        panel.add(printCheckButton, c);
-
-        c.gridx = 0;
         c.gridy = 6;
-        c.gridwidth = 2;
-        panel.add(timeDateGenerationLabel, c);
+        panel.add(printCheckButton, c);
 
         c.gridx = 0;
         c.gridy = 7;
         c.gridwidth = 2;
+        panel.add(timeDateGenerationLabel, c);
+
+        c.gridx = 0;
+        c.gridy = 8;
+        c.gridwidth = 2;
         c.fill = GridBagConstraints.BOTH;
         panel.add(resultArea, c);
 
+
+        setupDocumentFilters(numberAccountField, new IntegerValidator());
         setupDocumentFilters(nameField, new StringValidator());
         setupDocumentFilters(amountField, new DecimalValidator());
         setupDocumentFilters(reasonField, new StringValidator());
         getContentPane().add(panel);
 
         setLocationRelativeTo(null);
+    }
+
+    public String getNumeroCuenta() {
+        return numberAccountField.getText();
     }
 
     public String getName() {
