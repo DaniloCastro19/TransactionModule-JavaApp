@@ -70,7 +70,7 @@ import java.util.List;
             searchPanel.add(searchOption);
             searchPanel.add(searchInput);
             searchPanel.add(searchButton);
-            add(searchPanel, BorderLayout.CENTER);
+            add(searchPanel, BorderLayout.SOUTH);
         }
 
 
