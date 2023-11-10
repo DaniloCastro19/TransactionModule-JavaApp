@@ -4,6 +4,8 @@ package org.jala.university.domain;
 import org.jala.university.dao.TransactionDAO;
 import org.jala.university.model.Transaction;
 
+import java.util.List;
+
 
 public class TransactionModuleImpl implements TransactionModule {
 
@@ -17,8 +19,10 @@ public class TransactionModuleImpl implements TransactionModule {
         transactionDAO.create(transaction);
     }
 
-
-
+    @Override
+    public List<Transaction> findTransactionsWithAccountNumber(String searchTerm) {
+        return transactionDAO.getTransactionsWithAccountNumber(searchTerm);
+    }
 
 
 }

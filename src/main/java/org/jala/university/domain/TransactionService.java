@@ -1,8 +1,5 @@
 package org.jala.university.domain;
-import org.jala.university.dao.AccountDAO;
-import org.jala.university.dao.TransactionDAO;
-import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.UserModule;
+
 import org.jala.university.model.Account;
 import org.jala.university.model.Transaction;
 
@@ -60,5 +57,6 @@ public class TransactionService {
 
         transactionModule.depositTransaction(depositTransaction);
     }
+
 
 }
