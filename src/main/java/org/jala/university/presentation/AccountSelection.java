@@ -1,6 +1,5 @@
 package org.jala.university.presentation;
 
-import org.jala.university.domain.TransactionModule;
 import org.jala.university.domain.UserModule;
 import org.jala.university.model.BankUser;
 
