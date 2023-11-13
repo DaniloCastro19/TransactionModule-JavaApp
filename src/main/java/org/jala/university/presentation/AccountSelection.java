@@ -1,6 +1,6 @@
 package org.jala.university.presentation;
 
-import org.jala.university.domain.TransactionModule;
+import org.jala.university.dao.UserDAOMock;
 import org.jala.university.domain.UserModule;
 import org.jala.university.model.BankUser;
 
@@ -13,10 +13,11 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.table.JTableHeader;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +29,27 @@ import java.util.List;
         private JButton searchButton;
         private JTable table;
         private UserModule module;
+        List<BankUser> bankUserList;
+        UserDAOMock userDAOMock = new UserDAOMock();
+        private AccountSelectionDataSender accountSelectionListener;
+        String [] searchedUserInfo = new String[3];
 
-        public AccountSelection(UserModule module) {
+        public AccountSelection(UserModule module , AccountSelectionDataSender accountSelectionListener) {
             this.module = module;
-
+            this.accountSelectionListener = accountSelectionListener;
             initializeUI();
             setTitle("Cuentas");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setSize(800, 550);
             setLocationRelativeTo(null);
             setVisible(true);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    accountSelectionListener.onClosedAccountSelecctionView(searchedUserInfo);
+                }
+            });
+
         }
 
         private void initializeUI() {
@@ -45,11 +57,26 @@ import java.util.List;
             addTitleLabel();
             addSearchPanel();
             addTableScrollPane();
+            JTableHeader tableHeader = table.getTableHeader();
+            tableHeader.setReorderingAllowed(false);
+            bankUserList = userDAOMock.getMockBankUsers();
         }
 
         private void addTableScrollPane() {
             BankUserTableModel tableModel = new BankUserTableModel(new ArrayList<>());
             table = new JTable(tableModel);
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int row = table.rowAtPoint(e.getPoint());
+                    int columnCount = table.getColumnCount();
+                    for (int i = 0; i < columnCount; i++) {
+                        Object cellValue = table.getValueAt(row, i);
+                        searchedUserInfo[i] = String.valueOf(cellValue);
+                    }
+                    dispose();
+                }
+            });
             JScrollPane scrollPane = new JScrollPane(table);
             add(scrollPane, BorderLayout.CENTER);
         }
@@ -70,7 +97,7 @@ import java.util.List;
             searchPanel.add(searchOption);
             searchPanel.add(searchInput);
             searchPanel.add(searchButton);
-            add(searchPanel, BorderLayout.CENTER);
+            add(searchPanel, BorderLayout.SOUTH);
         }
 
 
@@ -79,10 +106,9 @@ import java.util.List;
             List<BankUser> userList;
 
             if (searchOption.getSelectedIndex() == 0) {
-                userList = module.findUsersByNameOrLastName(searchTerm);
+                userList = userDAOMock.findMockUsersByNameOrLastName(searchTerm);
             } else {
-                userList = module.findUsersByAccountNumber(searchTerm);
-            }
+                userList = userDAOMock.findMockUsersByAccountNumber(searchTerm);            }
 
             updateTableModel(userList);
         }

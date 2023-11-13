@@ -1,21 +1,15 @@
 package org.jala.university.domain;
-import org.jala.university.dao.AccountDAO;
-import org.jala.university.dao.TransactionDAO;
-import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.UserModule;
+
 import org.jala.university.model.Account;
 import org.jala.university.model.Transaction;
-
 import java.util.Date;
 import java.util.UUID;
-
 import jakarta.transaction.Transactional;
 import org.jala.university.model.TransactionType;
 import org.jala.university.model.TransactionStatus;
 import org.jala.university.model.Currency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class TransactionService {
@@ -58,7 +52,39 @@ public class TransactionService {
                 .description(description)
                 .build();
 
-        transactionModule.depositTransaction(depositTransaction);
+        transactionModule.createTransaction(depositTransaction);
     }
 
+    /**
+     * Processes a withdrawal transaction, deducting an amount from a source account.
+     *
+     * @param sourceAccountID  the unique identifier of the source account
+     * @param amount           the amount to withdraw
+     * @return true if the withdrawal was successful, false if there were insufficient funds
+     */
+    @Transactional
+    public boolean withdrawal(UUID sourceAccountID, Long amount, String description, Currency currency, Date date) {
+        Account sourceAccount = userModule.findUserById(sourceAccountID);
+
+        if (sourceAccount.getBalance() < amount) {
+            return false;
+        }
+
+        sourceAccount.setBalance(sourceAccount.getBalance() - amount);
+        userModule.update(sourceAccount);
+
+        Transaction withdrawalTransaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(date)
+                .type(TransactionType.WITHDRAWAL)
+                .amount(amount)
+                .currency(currency)
+                .accountFrom(sourceAccount)
+                .status(TransactionStatus.COMPLETED)
+                .description(description)
+                .build();
+
+        transactionModule.createTransaction(withdrawalTransaction);
+        return true;
+    }
 }

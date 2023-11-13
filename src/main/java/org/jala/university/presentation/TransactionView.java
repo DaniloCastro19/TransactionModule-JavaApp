@@ -1,31 +1,34 @@
 package org.jala.university.presentation;
 
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.jala.university.dao.AccountDAO;
-import org.jala.university.dao.UserDAO;
+import org.jala.university.dao.AccountDAOMock;
+import org.jala.university.dao.TransactionDAO;
+import org.jala.university.dao.TransactionDAOMock;
+import org.jala.university.dao.UserDAOMock;
+import org.jala.university.domain.TransactionModuleImpl;
+import org.jala.university.domain.UserModule;
 import org.jala.university.model.*;
-import org.jala.university.Utils.Validator.InputValidator;
-import org.jala.university.services.TransactionModule;
-import org.jala.university.services.TransactionModuleImpl;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.model.Currency;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.table.JTableHeader;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.util.*;
 public class TransactionView extends JFrame {
-    private final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Transaction entity");
-    private final EntityManager entityManager = entityManagerFactory.createEntityManager();
-    private final AccountDAO accountDAO = new AccountDAO(entityManager);
-    private final UserDAO userDAO = new UserDAO(entityManager);
-
-    private final List<Account> accountList = accountDAO.findAll();
-    private TransactionModule transactionModule ;
+    private TransactionModule transactionModule;
+    private UserModule userModule;
+    TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
 
     private JLabel labelTitle = new JLabel("  Formulario de transacción:");
     private JTextField accountRootNumberTextField = createTextField(20);
@@ -44,12 +47,11 @@ public class TransactionView extends JFrame {
     private JButton completeTransactionButton = createButton("Completar Transacción");
     private JButton searchOriginButton = createButton("Buscar cuenta origen");
     private JButton searchDestinyButton = createButton("Buscar cuenta destino");
+    private JButton cleanButton = createButton("Limpiar Campos");
     private TransactionStatus transactionStatus;
-
-    private final HashMap<String, String> accountNames = new HashMap<>();
-
-    public TransactionView(TransactionModule transactionModule) {
-        this.transactionModule = transactionModule;
+    AccountSelection accountSelection;
+    UserDAOMock userDAOMock = new UserDAOMock();
+    public TransactionView() {
         transactionStatus = TransactionStatus.PENDING;
         setTitle("Formulario de la transacción");
         setSize(500, 500);
@@ -59,7 +61,8 @@ public class TransactionView extends JFrame {
         setResizable(false);
         addComponents();
         addEventListeners();
-        completeTransactionButton.setEnabled(false); // Establecer el botón como deshabilitado inicialmente
+        completeTransactionButton.setEnabled(true); // Establecer el botón como deshabilitado inicialmente
+
     }
 
     private JTextField createTextField(int columns) {
@@ -85,29 +88,21 @@ public class TransactionView extends JFrame {
         addLabeledTextField("  Nombre de origen:", originTextFiled);
         addLabeledTextField("  Cuenta de destino:", addresseeAccountNumberTextField);
         addLabeledTextField("  Nombre del destinatario:", addresseeTextFiled);
+        accountRootNumberTextField.setEditable(false);
+        addresseeAccountNumberTextField.setEditable(false);
+        originTextFiled.setEditable(false);
+        addresseeTextFiled.setEditable(false);
+        transactionStatusTextFiled.setEditable(false);
         add(searchOriginButton);
         add(searchDestinyButton);
         addLabeledComboBox("  Tipo de Transacción:", transactionTypeComboBox);
         addLabeledTextField("  Cantidad:", amountTextField);
         addLabeledComboBox("  Tipo de Moneda:", currencyComboBox);
-        addLabeledTextField("  Estado de Transacción:", transactionStatusTextFiled);
         addLabeledTextField("  Detalles Adicionales:", additionalDetailsTextField);
         add(dateLabel);
         add(new JLabel(""));
-        add(editButton);
-        add(saveButton);
         add(completeTransactionButton);
-        setFieldsEditable(false);
-        saveButton.setEnabled(false);
-        completeTransactionButton.setEnabled(false);
-        transactionStatusTextFiled.setEnabled(false);
-        transactionStatusTextFiled.setEditable(false);
-        setupDocumentFilters(accountRootNumberTextField, "numeric");
-        setupDocumentFilters(originTextFiled, "alphaWithSpaces");
-        setupDocumentFilters(addresseeAccountNumberTextField, "numeric");
-        setupDocumentFilters(amountTextField, "numericOrDecimal");
-        setupDocumentFilters(addresseeTextFiled, "alphaWithSpaces");
-        setupDocumentFilters(additionalDetailsTextField, "alphaWithSpaces");
+        add(cleanButton);
     }
 
     private void addLabeledTextField(String label, JTextField textField) {
@@ -119,136 +114,80 @@ public class TransactionView extends JFrame {
         add(new JLabel(label));
         add(comboBox);
     }
-
-    private void setFieldsEditable(boolean editable) {
-        Component[] components = getContentPane().getComponents();
-        for (Component component : components) {
-            if (component instanceof JTextField || component instanceof JComboBox) {
-                component.setEnabled(editable);
-                if (component == originTextFiled || component == addresseeTextFiled) {
-                    ((JTextField) component).setEditable(false); // Hacer no editable
-                }
-            }
-        }
-    }
-
-    private void setupDocumentFilters(JTextField textField, String validationType) {
-        Document doc = textField.getDocument();
-        if (doc instanceof PlainDocument) {
-            ((PlainDocument) doc).setDocumentFilter(new DocumentFilter() {
-                @Override
-                public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                    if (validateInput(string, validationType)) {
-                        super.insertString(fb, offset, string, attr);
-                    }
-                }
-
-                @Override
-                public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                    if (validateInput(text, validationType)) {
-                        super.replace(fb, offset, length, text, attrs);
-                    }
-                }
-            });
-        }
-    }
-
-    private boolean validateInput(String input, String validationType) {
-        switch (validationType) {
-            case "numeric":
-                return InputValidator.isNumeric(input);
-            case "numericOrDecimal":
-                return InputValidator.isNumericOrDecimal(input);
-            case "alphaWithSpaces":
-                return InputValidator.isAlphaWithSpaces(input);
-            default:
-                return false;
-        }
-    }
-
     private void addEventListeners() {
-        editButton.addActionListener(e -> {
-            setFieldsEditable(true);
-            saveButton.setEnabled(true);
-            transactionStatusTextFiled.setText(String.valueOf(transactionStatus));
-        });
-
-        saveButton.addActionListener(e -> {
-            setFieldsEditable(false);
-            saveButton.setEnabled(false);
-            completeTransactionButton.setEnabled(true);
-        });
-
-        completeTransactionButton.addActionListener(e -> {
+        completeTransactionButton.addActionListener(xe -> {
             if (!areFieldsValidated()) {
                 JOptionPane.showMessageDialog(this, "No se puede completar la transacción. Por favor, complete todos los campos.");
             } else {
                 int option = JOptionPane.showOptionDialog(this,
-                        "¿Qué desea hacer con la transacción?",
+                        "¿Desea realizar la transacción?",
                         "Completar Transacción",
                         JOptionPane.DEFAULT_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        new String[]{"Ok", "Editar"},
-                        "Ok");
+                        new String[]{"Realizar", "Cancelar"},
+                        "Realizar");
 
                 if (option == 0) {
-                    JOptionPane.showMessageDialog(this, "Transacción completada.");
-                    transactionStatus = TransactionStatus.COMPLETED;
                     editButton.setEnabled(false);
+                    TransactionDAO transactionDAO = new TransactionDAO(null);
+                    transactionModule = new TransactionModuleImpl(transactionDAO);
                     Currency currency = (Currency) currencyComboBox.getSelectedItem();
                     TransactionType transactionType = (TransactionType) transactionTypeComboBox.getSelectedItem();
+                    Account accountFrom = userDAOMock.findUser(accountRootNumberTextField.getText()).getAccount();
+                    Account accountTo = userDAOMock.findUser(addresseeAccountNumberTextField.getText()).getAccount();
+                    Transaction transaction = Transaction.builder()
+                            .id(UUID.randomUUID())
+                            .date(getCurrentDate())
+                            .status(TransactionStatus.PENDING)
+                            .type(transactionType)
+                            .currency(currency)
+                            .amount(Long.valueOf(amountTextField.getText()))
+                            .description(additionalDetailsTextField.getText())
+                            .accountFrom(accountFrom)
+                            .accountTo(accountTo)
+                            .build();
+                    TransactionStatus transactionStatus = transactionDAOMock.transferExecution(transaction);
 
-                    transactionModule.makeTransfer(getCurrentDate(), transactionStatus, amountTextField.getText(), transactionType,
-                            currency ,accountRootNumberTextField.getText(), addresseeAccountNumberTextField.getText());
-                    completeTransactionButton.setEnabled(false);
-                    transactionStatusTextFiled.setText(String.valueOf(transactionStatus));
-                    dispose();
-                } else if (option == 1) {
-                    setFieldsEditable(true);
-                    saveButton.setEnabled(true);
-                    transactionStatusTextFiled.setText(String.valueOf(transactionStatus));
+                    if (transactionStatus == TransactionStatus.COMPLETED){
+                        JOptionPane.showMessageDialog(this, "Transacción exitosa.");
+                    }else {
+                        JOptionPane.showMessageDialog(this, "Transacción Fallida. Verifique los balances de la cuenta.");
+                    }
                 }
             }
         });
-
-        //TODO: ACÁ
         searchOriginButton.addActionListener(e -> {
-            //List<BankUser> accountFrom = transactionModule.findUsersByAccountNumber();
-            String originAccountNumber = accountRootNumberTextField.getText();
-            BankUser accountFrom = null;
-            for (Account account: accountList){
-                if(account.getAccountNumber() == originAccountNumber){
-                    accountFrom = transactionModule.findUserByAccountNumber(originAccountNumber);
+            accountSelection = new AccountSelection(userModule, accountData -> {
+                if (!(addresseeAccountNumberTextField.getText().equals(accountData[0]))){
+                    accountRootNumberTextField.setText(accountData[0]);
+                    originTextFiled.setText(accountData[1] + " " + accountData[2]);
+                }else {
+                    JOptionPane.showMessageDialog(this, "Esta cuenta ya ha sido seleccionada. Por favor ingrese una diferente.");
                 }
-            }
-            if (accountFrom != null) {
-                originTextFiled.setText(accountFrom.getFirstName());
-                System.out.println(accountFrom.getFirstName());
-            } else {
-                JOptionPane.showMessageDialog(this, "Cuenta origen no encontrada. Ingrese una cuenta válida.");
-            }
-            /*
-            List<BankUser> accountFrom = transactionModule.findUsersByAccountNumber();
-            String originAccountNumber = accountRootNumberTextField.getText();
-            if (accountNames.containsKey(originAccountNumber)) {
-                String originName = accountNames.get(originAccountNumber);
-                originTextFiled.setText(originName);
-            } else {
-                JOptionPane.showMessageDialog(this, "Cuenta origen no encontrada. Ingrese una cuenta válida.");
-            }
-
-             */
+            });
+            accountSelection.setVisible(true);
         });
 
         searchDestinyButton.addActionListener(e -> {
-            String destinyAccountNumber = addresseeAccountNumberTextField.getText();
-            if (accountNames.containsKey(destinyAccountNumber)) {
-                String destinyName = accountNames.get(destinyAccountNumber);
-                addresseeTextFiled.setText(destinyName);
-            } else {
-                JOptionPane.showMessageDialog(this, "Cuenta destino no encontrada. Ingrese una cuenta válida.");
-            }
+            accountSelection = new AccountSelection(userModule, accountData -> {
+                if (!(accountRootNumberTextField.getText().equals(accountData[0]))) {
+                    addresseeAccountNumberTextField.setText(accountData[0]);
+                    addresseeTextFiled.setText(accountData[1] + " " + accountData[2]);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Esta cuenta ya ha sido seleccionada. Por favor ingrese una diferente.");
+                }
+            });
+            accountSelection.setVisible(true);
+        });
+
+        cleanButton.addActionListener(e ->{
+            accountRootNumberTextField.setText("");
+            originTextFiled.setText("");
+            addresseeTextFiled.setText("");
+            addresseeAccountNumberTextField.setText("");
+            amountTextField.setText("");
+            additionalDetailsTextField.setText("");
         });
     }
 
@@ -273,10 +212,7 @@ public class TransactionView extends JFrame {
             }
         }
     }
-    //TODO: VALIDAR QUE LA CUENTA EXISTA PARA DESPUÉS PODER INTERACTUAR CON ESAS CUENTAS EN LA TRANSACCIÓN.
-    private void searchAccount(String accountNumber){
 
-    }
     private boolean areFieldsValidated() {
         return !addresseeAccountNumberTextField.getText().isEmpty() &&
                 !addresseeTextFiled.getText().isEmpty() &&
@@ -284,19 +220,13 @@ public class TransactionView extends JFrame {
                 !additionalDetailsTextField.getText().isEmpty();
     }
 
-    public void addAccountName(String accountNumber, String accountName) {
-        accountNames.put(accountNumber, accountName);
-    }
-/*
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
-            TransactionModule transactionModule1 = new TransactionModuleImpl();
             TransactionView formView = new TransactionView();
             formView.setVisible(true);
         });
     }
 
- */
+
 }
-
-
