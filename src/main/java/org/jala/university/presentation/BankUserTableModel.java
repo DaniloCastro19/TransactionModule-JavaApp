@@ -6,7 +6,6 @@ import org.jala.university.model.BankUser;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BankUserTableModel extends AbstractTableModel {
     private List<BankUser> userList;
