@@ -1,10 +1,8 @@
 package org.jala.university.presentation;
 import org.jala.university.Utils.Validator.DecimalValidator;
-import org.jala.university.dao.AccountDAOMock;
-import org.jala.university.dao.MockDataGenerator;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.dao.UserDAOMock;
-import org.jala.university.domain.*;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.TransactionService;
+import org.jala.university.domain.UserModule;
 import org.jala.university.model.Account;
 import org.jala.university.model.BankUser;
 import org.jala.university.model.Currency;
