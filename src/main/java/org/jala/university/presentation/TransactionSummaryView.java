@@ -1,12 +1,7 @@
 package org.jala.university.presentation;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JTextArea;
-import javax.swing.BorderFactory;
-import java.awt.Color;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The TransactionSummaryView class represents the graphical user
@@ -29,27 +24,6 @@ public class TransactionSummaryView extends JFrame {
     private int labelAndFieldVerticalPosition;
 
 
-    // Member variables for labels and text fields.
-    private final JLabel idLabel;
-    private final JLabel dateLabel;
-    private final JLabel typeLabel;
-    private final JLabel amountLabel;
-    private final JLabel currencyLabel;
-    private final JLabel accountFromLabel;
-    private final JLabel accountToLabel;
-    private final JLabel statusLabel;
-    private JLabel descriptionLabel;
-
-    private final JTextField idField;
-    private final JTextField dateField;
-    private final JTextField typeField;
-    private final JTextField amountField;
-    private final JTextField currencyField;
-    private final JTextField accountFromField;
-    private final JTextField accountToField;
-    private final JTextField statusField;
-    private JTextArea descriptionArea;
-
     /**
      * Constructor for the TransactionSummaryView class.
      *
@@ -67,51 +41,52 @@ public class TransactionSummaryView extends JFrame {
         setLocationRelativeTo(null);
         int VERTICAL_POSITION_MOVEMENT = 40; //Vertical movement in pixels to set JLabel and JTextField items.
 
-        idLabel = labelCreator("ID");
+        // Member variables for labels and text fields.
+        JLabel idLabel = labelCreator("ID");
         add(idLabel);
-        idField = fieldCreator(transactionValues.getPrintableId());
+        JTextField idField = fieldCreator(String.valueOf(transactionValues.getPrintableId()));
         add(idField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        dateLabel = labelCreator("Fecha: ");
+        JLabel dateLabel = labelCreator("Fecha: ");
         add(dateLabel);
-        dateField = fieldCreator(transactionValues.getPrintableDate());
+        JTextField dateField = fieldCreator(transactionValues.getPrintableDate());
         add(dateField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        typeLabel = labelCreator("Tipo Transacción: ");
+        JLabel typeLabel = labelCreator("Tipo Transacción: ");
         add(typeLabel);
-        typeField = fieldCreator(transactionValues.getPrintableTransactionType());
+        JTextField typeField = fieldCreator(transactionValues.getPrintableTransactionType());
         add(typeField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        amountLabel = labelCreator("Monto: ");
+        JLabel amountLabel = labelCreator("Monto: ");
         add(amountLabel);
-        amountField = fieldCreator(transactionValues.getPrintableAmount());
+        JTextField amountField = fieldCreator(transactionValues.getPrintableAmount());
         add(amountField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        currencyLabel = labelCreator("Divisa: ");
+        JLabel currencyLabel = labelCreator("Divisa: ");
         add(currencyLabel);
-        currencyField = fieldCreator(transactionValues.getPrintableCurrency());
+        JTextField currencyField = fieldCreator(transactionValues.getPrintableCurrency());
         add(currencyField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountFromLabel = labelCreator("Cuenta Debitada: ");
+        JLabel accountFromLabel = labelCreator("Cuenta Debitada: ");
         add(accountFromLabel);
-        accountFromField = fieldCreator(transactionValues.getPrintableAccountFrom());
+        JTextField accountFromField = fieldCreator(transactionValues.getPrintableAccountFrom());
         add(accountFromField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        accountToLabel = labelCreator("Cuenta Destinataria: ");
+        JLabel accountToLabel = labelCreator("Cuenta Destinataria: ");
         add(accountToLabel);
-        accountToField = fieldCreator(transactionValues.getPrintableAccountTo());
+        JTextField accountToField = fieldCreator(transactionValues.getPrintableAccountTo());
         add(accountToField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
-        statusLabel = labelCreator("Estado Transacción: ");
+        JLabel statusLabel = labelCreator("Estado Transacción: ");
         add(statusLabel);
-        statusField = fieldCreator(transactionValues.getPrintableTransactionStatus());
+        JTextField statusField = fieldCreator(transactionValues.getPrintableTransactionStatus());
         add(statusField);
 
         labelAndFieldVerticalPosition += VERTICAL_POSITION_MOVEMENT;
@@ -156,15 +131,15 @@ public class TransactionSummaryView extends JFrame {
      * @param description The transaction description to display.
      */
     private void descriptionCreatorUI(String description) {
-        descriptionLabel = new JLabel("Descripción: ");
+        JLabel descriptionLabel = new JLabel("Descripción: ");
         descriptionLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
+                                   LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
         add(descriptionLabel);
 
         int FIELD_HEIGHT_TEXT_AREA = 100;
-        descriptionArea = new JTextArea(description);
+        JTextArea descriptionArea = new JTextArea(description);
         descriptionArea.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                FIELD_STANDARD_WIDTH, FIELD_HEIGHT_TEXT_AREA);
+                                  FIELD_STANDARD_WIDTH, FIELD_HEIGHT_TEXT_AREA);
         descriptionArea.setEnabled(false);
         descriptionArea.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
         descriptionArea.setDisabledTextColor(Color.BLACK);
