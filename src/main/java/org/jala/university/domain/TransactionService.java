@@ -1,13 +1,14 @@
 package org.jala.university.domain;
-
-import org.jala.university.model.Account;
-import org.jala.university.model.Transaction;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import jakarta.transaction.Transactional;
-import org.jala.university.model.TransactionType;
-import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.Account;
+import org.jala.university.model.BankUser;
 import org.jala.university.model.Currency;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +87,34 @@ public class TransactionService {
 
         transactionModule.createTransaction(withdrawalTransaction);
         return true;
+    }
+    /**
+     * Processes a transfer transaction.
+     *
+     * @param transaction  the transation builded to be is processed in the method.
+     */
+    @Transactional
+    public TransactionStatus transfer(Transaction transaction){
+        if (transaction.getAmount() <= 0 || transaction.getAmount() > transaction.getAccountFrom().getBalance()) {
+            transaction.setStatus(TransactionStatus.FAILED);
+            transactionModule.createTransaction(transaction);
+            return TransactionStatus.FAILED;
+        } else {
+            List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(transaction.getAccountFrom().getAccountNumber());
+            List<BankUser> accountToUserResults = userModule.findUsersByAccountNumber(transaction.getAccountTo().getAccountNumber());
+
+            Account accountFrom = accountFromUserResults.get(0).getAccount();
+            Account accountTo = accountToUserResults.get(0).getAccount();
+            Long amount = transaction.getAmount();
+
+            Long accountFromNewBalance = accountFrom.getBalance() - amount;
+            accountFrom.setBalance(accountFromNewBalance);
+            Long accountToNewBalance = accountTo.getBalance() + amount;
+            accountTo.setBalance(accountToNewBalance);
+            System.out.println("Balance de " + accountFrom.getOwner().getFirstName() + "= " + accountFrom.getBalance());
+            System.out.println("Balance de " + accountTo.getOwner().getFirstName() + "= " + accountTo.getBalance());
+            transactionModule.createTransaction(transaction);
+            return TransactionStatus.COMPLETED;
+        }
     }
 }

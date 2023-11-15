@@ -35,7 +35,6 @@ public class UserDAOMock extends UserDAO {
                 .filter(user -> user.getAccount() != null && user.getAccount().getAccountNumber().equals(accountNumber))
                 .collect(Collectors.toList());
     }
-
     @Override
     public BankUser update(BankUser user) {
         users.put(user.getId(), user);
