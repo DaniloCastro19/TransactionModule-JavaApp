@@ -1,7 +1,6 @@
 package org.jala.university.dao;
 
 import org.jala.university.model.Transaction;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TransactionDAOMock extends TransactionDAO {
-
     private final Map<UUID, Transaction> transactionMap = new HashMap<>();
-
     public TransactionDAOMock() {
         super(null);
     }

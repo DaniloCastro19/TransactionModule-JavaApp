@@ -33,4 +33,5 @@ public class UserModuleImpl implements  UserModule{
     public Account findUserById(UUID id) {
         return userDAO.findOne(id).getAccount();
     }
+
 }

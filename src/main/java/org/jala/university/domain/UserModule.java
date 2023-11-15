@@ -11,4 +11,5 @@ public interface UserModule {
     List<BankUser> findUsersByNameOrLastName(String name);
     void update(Account account);
     Account findUserById(UUID id);
+
 }

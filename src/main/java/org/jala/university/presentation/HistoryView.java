@@ -87,17 +87,4 @@ public class HistoryView extends JFrame {
         tableModel.setTransactionList(transactionList);
         tableModel.fireTableDataChanged();
     }
-
-    public static void main(String[] args) {
-        UserDAOMock userDaoMock = new UserDAOMock();
-        AccountDAOMock accountDaoMock = new AccountDAOMock();
-        TransactionDAOMock transactionDaoMock = new TransactionDAOMock();
-
-        MockDataGenerator generator = new MockDataGenerator(userDaoMock, accountDaoMock, transactionDaoMock);
-        generator.generateMockData();
-
-        TransactionModule transactionModule = new TransactionModuleImpl(transactionDaoMock);
-        HistoryView view = new HistoryView(transactionModule);
-        view.setVisible(true);
-    }
 }
