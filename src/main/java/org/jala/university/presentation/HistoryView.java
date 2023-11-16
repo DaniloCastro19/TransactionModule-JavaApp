@@ -7,7 +7,10 @@ import org.jala.university.dao.UserDAOMock;
 import org.jala.university.dao.MockDataGenerator;
 import org.jala.university.domain.TransactionModule;
 import org.jala.university.domain.TransactionModuleImpl;
+import org.jala.university.model.BankUser;
 import org.jala.university.model.Transaction;
+import org.jala.university.domain.HistoryReportGenerator;
+import  org.jala.university.dao.TransactionDAO;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -17,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
+import  javax.swing.JOptionPane;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -32,8 +36,11 @@ public class HistoryView extends JFrame {
     private JTable historyTable;
     private TransactionModule transactionModule;
 
+    private HistoryReportGenerator historyReportGenerator;
+
     public HistoryView(TransactionModule transactionModule) {
         this.transactionModule = transactionModule;
+        this.historyReportGenerator = new HistoryReportGenerator(transactionModule);
         initializeUI();
         setTitle("Historial de Transacciones");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,6 +71,23 @@ public class HistoryView extends JFrame {
         searchPanel.add(searchInput);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.SOUTH);
+        JButton generateReportButton = new JButton("Generar Reporte");
+        generateReportButton.addActionListener(this::generateReport);
+        searchPanel.add(generateReportButton);
+        add(searchPanel, BorderLayout.SOUTH);
+    }
+    private void generateReport(ActionEvent e) {
+        String accountNumber = searchInput.getText();
+
+        BankUser user = transactionModule.getUserInfoForAccountNumber(accountNumber);
+        if (user != null) {
+            String report = historyReportGenerator.generateReport(accountNumber);
+
+            TransactionReportView reportView = new TransactionReportView(user, report);
+            reportView.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró un usuario con ese número de cuenta", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void addTableScrollPane() {
