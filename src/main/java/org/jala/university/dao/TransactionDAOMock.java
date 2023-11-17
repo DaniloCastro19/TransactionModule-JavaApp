@@ -1,12 +1,19 @@
 package org.jala.university.dao;
 
+import org.jala.university.model.Account;
 import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionType;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TransactionDAOMock extends TransactionDAO {
     private final Map<UUID, Transaction> transactionMap = new HashMap<>();
@@ -30,6 +37,54 @@ public class TransactionDAOMock extends TransactionDAO {
         transaction.setId(id);
         transactionMap.put(id, transaction);
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> getTransactionsForCurrentMonth(Date startDate, Date endDate, Account account) {
+        return transactionMap.values().stream()
+                .filter(transaction -> {
+                    Date transactionDate = transaction.getDate();
+                    return (transactionDate.equals(startDate) || transactionDate.after(startDate)) &&
+                            (transactionDate.equals(endDate) || transactionDate.before(endDate));
+                })
+                .filter(transaction ->
+                        transaction.getAccountFrom().equals(account) ||
+                                transaction.getAccountTo().equals(account)
+                )
+                .collect(Collectors.toList());    }
+
+    @Override
+    public List<Transaction> getTransactionsWithNameOrLastName(String name) {
+        return transactionMap.values().stream()
+                .filter(transaction -> transaction.getAccountFrom().getName().toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Transaction> getTransactionsWithTransactionAmount(boolean orderByDescending) {
+        Stream<Transaction> transactionStream = transactionMap.values().stream();
+        if (orderByDescending) {
+            return transactionStream
+                    .sorted(Comparator.comparing(Transaction::getAmount).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            return transactionStream
+                    .sorted(Comparator.comparing(Transaction::getAmount))
+                    .collect(Collectors.toList());
+        }    }
+
+    @Override
+    public List<Transaction> getTTransactionWithDate(Date startDate, Date endDate) {
+        return transactionMap.values().stream()
+                .filter(transaction -> !transaction.getDate().before(startDate) && !transaction.getDate().after(endDate))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Transaction> getTTransactionWithType(TransactionType transactionType) {
+        return transactionMap.values().stream()
+                .filter(transaction -> transaction.getType().equals(transactionType))
+                .collect(Collectors.toList());
     }
 
     @Override
