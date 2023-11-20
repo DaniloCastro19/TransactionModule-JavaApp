@@ -1,9 +1,6 @@
 package org.jala.university.domain;
 
-import org.jala.university.dao.AccountDAOMock;
-import org.jala.university.dao.MockDataGenerator;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.dao.UserDAOMock;
+import org.jala.university.dao.*;
 import org.jala.university.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +19,8 @@ class TransactionServiceTest {
     private UserModule userModule = new UserModuleImpl(accountDAOMock, userDAOMock);
     private TransactionModule transactionModule = new TransactionModuleImpl(transactionDAOMock);
     private TransactionService transactionService = new TransactionService(transactionModule,userModule);
-    private MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock,transactionDAOMock);
+    private CheckDAOMock checkDAOMock = new CheckDAOMock();
+    private MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock,transactionDAOMock, checkDAOMock);
     private List<BankUser> accountToUserResults;
     private List<BankUser> accountFromUserResults;
     private Account accountTo;

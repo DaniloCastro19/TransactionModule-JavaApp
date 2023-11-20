@@ -1,21 +1,17 @@
 package org.jala.university.presentation;
 
-import org.jala.university.dao.TransactionDAOMock;
 import org.jala.university.domain.HistoryReportGenerator;
 import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.TransactionModuleImpl;
-import org.jala.university.model.Transaction;
 import org.jala.university.model.BankUser;
 
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.Font;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
-import java.util.List;
+import java.awt.Font;
 
 public class TransactionReportView extends JFrame {
 

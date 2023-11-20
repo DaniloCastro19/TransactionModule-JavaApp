@@ -1,6 +1,14 @@
 package org.jala.university.dao;
 
-import org.jala.university.model.*;
+import org.jala.university.model.Account;
+import org.jala.university.model.AccountStatus;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.Check;
+import org.jala.university.model.CheckStatus;
+import org.jala.university.model.Currency;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
 
 import java.util.Date;
 import java.util.UUID;
@@ -9,11 +17,13 @@ public class MockDataGenerator {
     private final UserDAOMock userDaoMock;
     private final AccountDAOMock accountDaoMock;
     private final TransactionDAOMock transactionDaoMock;
+    private final CheckDAOMock checkDAOMock;
 
-    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock) {
+    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock, CheckDAOMock checkDAOMock) {
         this.userDaoMock = userDaoMock;
         this.accountDaoMock = accountDaoMock;
         this.transactionDaoMock = transactionDaoMock;
+        this.checkDAOMock = checkDAOMock;
     }
 
     public void generateMockData() {
@@ -30,7 +40,7 @@ public class MockDataGenerator {
                     .id(UUID.randomUUID())
                     .accountNumber(String.valueOf(i))
                     .name(user.getFirstName() + " " + user.getLastName())
-                    .balance(1000L * i)
+                    .balance(10000L * i)
                     .status(AccountStatus.ACTIVE)
                     .currency(Currency.USD)
                     .created(new Date())
@@ -45,7 +55,7 @@ public class MockDataGenerator {
                         .id(UUID.randomUUID())
                         .date(new Date())
                         .type(TransactionType.DEPOSIT)
-                        .amount(100L * j)
+                        .amount(10000L * j)
                         .currency(Currency.USD)
                         .accountFrom(account)
                         .accountTo(account)
@@ -53,6 +63,19 @@ public class MockDataGenerator {
                         .description("Transaction " + j + " for User " + i)
                         .build();
                 transactionDaoMock.create(transaction);
+            }
+            for (int checkIndex = 1; checkIndex <=3; checkIndex++){
+                Check check = Check.builder()
+                        .id(UUID.randomUUID())
+                        .beneficiaryName(account.getName())
+                        .date(new Date())
+                        .amount(100L *checkIndex)
+                        .reason("Check " + checkIndex + " for user" + checkIndex)
+                        .currency(Currency.BOB)
+                        .status(CheckStatus.ACTIVE)
+                        .accountFrom(account)
+                        .build();
+                checkDAOMock.create(check);
             }
         }
     }

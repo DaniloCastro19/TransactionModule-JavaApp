@@ -80,7 +80,7 @@ public class HistoryView extends JFrame {
         this.transactionModule = transactionModule;
         initializeUI();
         setTitle("Historial de Transacciones");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 550);
         setLocationRelativeTo(null);
         setVisible(true);
