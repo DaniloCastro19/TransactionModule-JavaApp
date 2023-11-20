@@ -1,14 +1,16 @@
 package org.jala.university.presentation;
+
 import org.jala.university.Utils.Validator.DecimalValidator;
-import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.TransactionService;
-import org.jala.university.domain.UserModule;
+import org.jala.university.dao.TransactionDAOMock;
+import org.jala.university.domain.*;
 import org.jala.university.model.Account;
 import org.jala.university.model.BankUser;
 import org.jala.university.model.Currency;
 import org.jala.university.model.Transaction;
 import org.jala.university.model.TransactionStatus;
 import org.jala.university.model.TransactionType;
+import org.jala.university.validationMonthlyAmount.HighMonthlyAmountAlert;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -47,6 +49,7 @@ public class TransactionView extends JFrame {
     private TransactionStatus transactionStatus;
     private AccountSelection accountSelection;
     private TransactionService transactionService;
+    private HighMonthlyAmountAlert highMonthlyAmountAlert;
     public TransactionView(TransactionModule transactionModule, UserModule userModule) {
         this.transactionModule = transactionModule;
         this.userModule = userModule;
@@ -60,6 +63,9 @@ public class TransactionView extends JFrame {
         addComponents();
         addEventListeners();
         completeTransactionButton.setEnabled(true);
+
+        TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
+        highMonthlyAmountAlert = new HighMonthlyAmountAlert(transactionDAOMock);
 
     }
 
@@ -227,8 +233,19 @@ public class TransactionView extends JFrame {
                 .accountFrom(accountFrom)
                 .accountTo(accountTo)
                 .build();
-        TransactionStatus transactionStatus = transactionService.transfer(transaction);
-        return transactionStatus;
+
+        BankUser bankUser = accountFrom.getOwner();
+        Account account = accountFromUserResults.get(0).getAccount();
+
+        highMonthlyAmountAlert.showMessage(transaction, bankUser, account);
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Esta seguro que quiere continuar?", "Confirmacion", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_NO_OPTION) {
+            return transactionService.transfer(transaction);
+        } else {
+            return TransactionStatus.FAILED;
+        }
     }
     private Date getCurrentDate() {
         Date dateFormat = new Date();

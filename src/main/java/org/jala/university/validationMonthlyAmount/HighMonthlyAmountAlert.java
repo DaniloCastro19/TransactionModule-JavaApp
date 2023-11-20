@@ -1,6 +1,5 @@
 package org.jala.university.validationMonthlyAmount;
 
-import jakarta.persistence.EntityManager;
 import org.jala.university.model.BankUser;
 import org.jala.university.model.Currency;
 import org.jala.university.model.Account;
@@ -20,9 +19,14 @@ public class HighMonthlyAmountAlert {
     private final double LIMIT_MONTHLY_DOLLARS = 3000;
     private final double LIMIT_MONTHLY_EUROS = 4000;
 
-    public boolean hasExceededMonthlyThreshold(EntityManager entityManager, Transaction transaction, BankUser bankUser, Account account) {
+    private final TransactionDAO transactionDAO;
 
-        TransactionDAO transactionDAO = new TransactionDAO(entityManager);
+    public HighMonthlyAmountAlert(TransactionDAO transactionDAO) {
+        this.transactionDAO = transactionDAO;
+    }
+
+    public boolean hasExceededMonthlyThreshold(Transaction transaction, BankUser bankUser, Account account) {
+
         Date currentDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(currentDate);
@@ -42,9 +46,8 @@ public class HighMonthlyAmountAlert {
 
         return hasExceeded;
     }
-    // TODO: Move this message when forms are implemented
-    public void showMessage(EntityManager entityManager, Transaction transaction, BankUser bankUser, Account account) {
-        boolean hasExceeded = hasExceededMonthlyThreshold(entityManager, transaction, bankUser, account);
+    public void showMessage(Transaction transaction, BankUser bankUser, Account account) {
+        boolean hasExceeded = hasExceededMonthlyThreshold(transaction, bankUser, account);
 
         if (hasExceeded) {
             String customerName = bankUser.getFirstName() + " " + bankUser.getLastName();
@@ -54,7 +57,6 @@ public class HighMonthlyAmountAlert {
 
             showAlert(customerName, accountNumber, totalMonthlyAmount, currency);
         }
-        JOptionPane.showMessageDialog(null, hasExceeded, "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
     }
     private double getMonthlyLimit(Currency currency) {
         return switch (currency) {
@@ -69,5 +71,7 @@ public class HighMonthlyAmountAlert {
                 "Numero de Cuenta: " + accountNumber + "\n" +
                 "Monto Total: " + totalMonthlyAmount + " " + currency.getSymbol() + "(" + currency.name() + ")" + "\n" +
                 "Fecha: " + new Date();
+
+        JOptionPane.showMessageDialog(null, message, "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
     }
 }
