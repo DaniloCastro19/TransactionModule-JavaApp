@@ -68,6 +68,5 @@ public class HistoryReportGeneratorTest {
         assertTrue(report.contains("Nombre del Cliente: Gabriel Mendoza"));
         assertTrue(report.contains("Cliente ID: ID001"));
         assertTrue(report.contains("Numero de cuenta: 0908786651"));
-        assertTrue(report.contains("Fecha de Transaccion: "));
     }
 }

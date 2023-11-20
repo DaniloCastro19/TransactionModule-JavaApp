@@ -104,7 +104,6 @@ public class CheckView extends JFrame {
         addComponentToPanel(panel, c, timeDateGenerationLabel, 0, 8);
         addComponentToPanel(panel, c, new JScrollPane(resultArea), 0, 9);
         setupDocumentFilters(accountNumberTextField, new IntegerValidator());
-        setupDocumentFilters(beneficiaryNameTextField, new AlphaStringValidator());
         setupDocumentFilters(amountField, new DecimalValidator());
         setupDocumentFilters(reasonField, new StringValidator());
         addEventListeners();
@@ -216,16 +215,5 @@ public class CheckView extends JFrame {
         reasonField.setText("");
         resultArea.setText("");
     }
-    public static void main(String[] args) {
-        UserDAOMock userDaoMock = new UserDAOMock();
-        AccountDAOMock accountDAOMock = new AccountDAOMock();
-        TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
-        CheckDAOMock checkDAOMock = new CheckDAOMock();
-        UserModule userModule = new UserModuleImpl(accountDAOMock, userDaoMock);
-        CheckModule checkModule = new CheckModuleImpl(checkDAOMock);
-        MockDataGenerator dataGenerator = new MockDataGenerator(userDaoMock, accountDAOMock,transactionDAOMock);
-        dataGenerator.generateMockData();
-        CheckView view = new CheckView(checkModule ,userModule);
-        view.setVisible(true);
-    }
+
 }

@@ -53,7 +53,7 @@ public class TransactionView extends JFrame {
         transactionStatus = TransactionStatus.PENDING;
         setTitle("Formulario de la transacción");
         setSize(500, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(Color.WHITE);
         setLayout(new GridLayout(15, 2, 10, 10));
         setResizable(false);
