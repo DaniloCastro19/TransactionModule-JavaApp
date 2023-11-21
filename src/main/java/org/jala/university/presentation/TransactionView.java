@@ -70,6 +70,17 @@ public class TransactionView extends JFrame {
         TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
         highMonthlyAmountAlert = new HighMonthlyAmountAlert(transactionDAOMock);
 
+        transactionTypeComboBox.addActionListener(e -> {
+            TransactionType selectedType = (TransactionType) transactionTypeComboBox.getSelectedItem();
+            if (selectedType == TransactionType.WITHDRAWAL){
+                searchDestinyButton.setEnabled(false);
+                addresseeAccountNumberTextField.setText("");
+                addresseeTextFiled.setText("");
+            } else {
+                searchDestinyButton.setEnabled(true);
+            }
+        });
+
     }
 
     private JTextField createTextField(int columns) {
@@ -170,12 +181,14 @@ public class TransactionView extends JFrame {
                     TransactionStatus transactionStatus = null;
                     switch (transactionType){
                         case DEPOSIT:
+                            transactionStatus = makeDeposit();
                             break;
                         case WITHDRAWAL:
+                            transactionStatus = makeWithdrawal();
                             break;
                         case TRANSFER:
                             transactionStatus = makeTransfer();
-
+                            break;
                     }
                     if (transactionStatus == TransactionStatus.COMPLETED){
                         JOptionPane.showMessageDialog(this, "Transacción exitosa.");
@@ -250,6 +263,95 @@ public class TransactionView extends JFrame {
             return TransactionStatus.FAILED;
         }
     }
+
+    private TransactionStatus makeDeposit(){
+        Currency currency = (Currency) currencyComboBox.getSelectedItem();
+        List<BankUser> recipientUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
+        Account recipientAccount = recipientUserResults.get(0).getAccount();
+
+        Transaction transaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(getCurrentDate())
+                .status(TransactionStatus.PENDING)
+                .type(TransactionType.DEPOSIT)
+                .currency(currency)
+                .amount(Long.valueOf(amountTextField.getText()))
+                .description(additionalDetailsTextField.getText())
+                .accountTo(recipientAccount)
+                .build();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("Realizando depósito...");
+            Long depositAmount = Long.valueOf(amountTextField.getText());
+
+            System.out.println("Balance anterior de la cuenta destinataria: " + recipientAccount.getBalance());
+
+            transactionService.deposit(
+                    recipientAccount.getAccountNumber(),
+                    Long.valueOf(amountTextField.getText()),
+                    additionalDetailsTextField.getText(),
+                    currency,
+                    getCurrentDate()
+            );
+
+            System.out.println("Depósito de " + depositAmount + " realizado exitosamente.");
+            System.out.println("Nuevo balance de la cuenta destinataria: " + (recipientAccount.getBalance() + depositAmount));
+            String receipt = ReceiptGenerator.generateReceipt(transaction);
+            JOptionPane.showMessageDialog(null, receipt, "RECIBO", JOptionPane.INFORMATION_MESSAGE);
+
+            return TransactionStatus.COMPLETED;
+        } else {
+            return TransactionStatus.FAILED;
+        }
+
+    }
+    private  TransactionStatus makeWithdrawal(){
+        Currency currency = (Currency) currencyComboBox.getSelectedItem();
+        List<BankUser> sourceUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
+        Account sourceAccount = sourceUserResults.get(0).getAccount();
+
+        Transaction transaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(getCurrentDate())
+                .status(TransactionStatus.PENDING)
+                .type(TransactionType.WITHDRAWAL)
+                .currency(currency)
+                .amount(Long.valueOf(amountTextField.getText()))
+                .description(additionalDetailsTextField.getText())
+                .accountFrom(sourceAccount)
+                .build();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("Realizando retiro...");
+            Long withdrawalAmount = Long.valueOf(amountTextField.getText());
+
+            System.out.println("Balance anterior de la cuenta origen: " + sourceAccount.getBalance());
+            boolean withdrawalSuccessful = transactionService.withdrawal(
+                    sourceAccount.getAccountNumber(),
+                    Long.valueOf(amountTextField.getText()),
+                    additionalDetailsTextField.getText(),
+                    currency,
+                    getCurrentDate()
+            );
+            if (withdrawalSuccessful) {
+                sourceAccount = userModule.findUsersByAccountNumber(sourceAccount.getAccountNumber()).get(0).getAccount();
+                System.out.println("Retiro de " + withdrawalAmount + " realizado exitosamente.");
+                System.out.println("Nuevo balance de la cuenta origen: " + sourceAccount.getBalance());
+                String receipt = ReceiptGenerator.generateReceipt(transaction);
+                JOptionPane.showMessageDialog(null, receipt, "RECIBO", JOptionPane.INFORMATION_MESSAGE);
+                return TransactionStatus.COMPLETED;
+            } else {
+                System.out.println("Saldo insuficiente para el retiro.");
+                return TransactionStatus.FAILED;
+            }
+        } else {
+            return TransactionStatus.FAILED;
+        }
+    }
     private Date getCurrentDate() {
         Date dateFormat = new Date();
         return dateFormat;
@@ -272,10 +374,15 @@ public class TransactionView extends JFrame {
         }
     }
     private boolean areFieldsValidated() {
-        return !addresseeAccountNumberTextField.getText().isEmpty() &&
-                !addresseeTextFiled.getText().isEmpty() &&
-                !amountTextField.getText().isEmpty() &&
-                !additionalDetailsTextField.getText().isEmpty();
+        TransactionType selectedType = (TransactionType) transactionTypeComboBox.getSelectedItem();
+        if (selectedType == TransactionType.WITHDRAWAL){
+            return !accountRootNumberTextField.getText().isEmpty();
+        } else {
+            return !addresseeAccountNumberTextField.getText().isEmpty() &&
+                    !addresseeTextFiled.getText().isEmpty() &&
+                    !amountTextField.getText().isEmpty() &&
+                    !additionalDetailsTextField.getText().isEmpty();
+        }
     }
 }
 
