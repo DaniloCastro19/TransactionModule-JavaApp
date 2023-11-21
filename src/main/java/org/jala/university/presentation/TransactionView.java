@@ -1,16 +1,10 @@
 package org.jala.university.presentation;
 
-import org.jala.university.Utils.Validator.DecimalValidator;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.domain.*;
-import org.jala.university.model.Account;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Currency;
-import org.jala.university.model.Transaction;
-import org.jala.university.model.TransactionStatus;
-import org.jala.university.model.TransactionType;
-import org.jala.university.validationMonthlyAmount.HighMonthlyAmountAlert;
-
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -22,11 +16,19 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import java.awt.Color;
-import java.awt.GridLayout;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import org.jala.university.Utils.Validator.DecimalValidator;
+import org.jala.university.dao.TransactionDAOMock;
+import org.jala.university.domain.ScheduledTransferModule;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.TransactionService;
+import org.jala.university.domain.UserModule;
+import org.jala.university.model.Account;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.Currency;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
+import org.jala.university.validationMonthlyAmount.HighMonthlyAmountAlert;
 public class TransactionView extends JFrame {
     private TransactionModule transactionModule;
     private UserModule userModule;
@@ -193,7 +195,7 @@ public class TransactionView extends JFrame {
                     if (transactionStatus == TransactionStatus.COMPLETED){
                         JOptionPane.showMessageDialog(this, "Transacción exitosa.");
                     }else {
-                        JOptionPane.showMessageDialog(this, "Transacción Fallida. Verifique los balances de la cuenta.");
+                        JOptionPane.showMessageDialog(this, "Transacción Fallida. Verifique los balances o el tipo de moneda de la cuenta.");
                     }
                 }
             }
@@ -232,11 +234,11 @@ public class TransactionView extends JFrame {
         });
     }
 
-    private TransactionStatus makeTransfer(){
+    private TransactionStatus makeTransfer() {
         Currency currency = (Currency) currencyComboBox.getSelectedItem();
         List<BankUser> accountToUserResults = userModule.findUsersByAccountNumber(addresseeAccountNumberTextField.getText());
         List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
-        Account accountTo= accountToUserResults.get(0).getAccount();
+        Account accountTo = accountToUserResults.get(0).getAccount();
         Account accountFrom = accountFromUserResults.get(0).getAccount();
         Transaction transaction = Transaction.builder()
                 .id(UUID.randomUUID())
@@ -258,10 +260,15 @@ public class TransactionView extends JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Esta seguro que quiere continuar?", "Confirmacion", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_NO_OPTION) {
-            return transactionService.transfer(transaction);
-        } else {
+            if (!isvalidCurrecy(transaction)) {
+                JOptionPane.showMessageDialog(this, "No se puede completar la transacción. El tipo de moneda de la cuenta no coincide.");
+            } else {
+                return transactionService.transfer(transaction);
+            }
+        }else {
             return TransactionStatus.FAILED;
         }
+        return transactionStatus;
     }
 
     private TransactionStatus makeDeposit(){
@@ -355,6 +362,9 @@ public class TransactionView extends JFrame {
     private Date getCurrentDate() {
         Date dateFormat = new Date();
         return dateFormat;
+    }
+    public boolean isvalidCurrecy(Transaction transaction){
+        return transaction.getCurrency().equals(transaction.getAccountTo().getCurrency());
     }
 
     private class JTextFieldLimit extends PlainDocument {
