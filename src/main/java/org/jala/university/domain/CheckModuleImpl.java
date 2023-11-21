@@ -21,4 +21,9 @@ public class CheckModuleImpl implements CheckModule{
     public List<Check> findCheckWithUUID(UUID checkId) {
         return checkDAO.getCheckWithUUID(checkId);
     }
+
+    @Override
+    public boolean hasSufficientFunds(Check check) {
+        return false;
+    }
 }
