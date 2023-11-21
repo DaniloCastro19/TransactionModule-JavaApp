@@ -15,10 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class TransactionServiceTest {
     private AccountDAOMock accountDAOMock = new AccountDAOMock();
     private UserDAOMock userDAOMock = new UserDAOMock();
+    private ScheduledTransferDAOMock scheduledTransferDAOMock = new ScheduledTransferDAOMock();
+    private ScheduledTransferModule scheduledTransferModule = new ScheduledTransferModuleImpl(scheduledTransferDAOMock);
     private TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
     private UserModule userModule = new UserModuleImpl(accountDAOMock, userDAOMock);
     private TransactionModule transactionModule = new TransactionModuleImpl(transactionDAOMock);
-    private TransactionService transactionService = new TransactionService(transactionModule,userModule);
+    private TransactionService transactionService = new TransactionService(transactionModule,userModule,scheduledTransferModule);
     private CheckDAOMock checkDAOMock = new CheckDAOMock();
     private MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock,transactionDAOMock, checkDAOMock);
     private List<BankUser> accountToUserResults;

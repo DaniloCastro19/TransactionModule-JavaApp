@@ -1,27 +1,31 @@
 package org.jala.university.domain;
+
+import jakarta.transaction.Transactional;
+import org.jala.university.model.Currency;
+import org.jala.university.model.Account;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionType;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.BankUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import jakarta.transaction.Transactional;
-import org.jala.university.model.Account;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Currency;
-import org.jala.university.model.Transaction;
-import org.jala.university.model.TransactionStatus;
-import org.jala.university.model.TransactionType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionService {
 
     private TransactionModule transactionModule;
     private UserModule userModule;
+    private ScheduledTransferModule scheduledTransferModule;
 
     @Autowired
-    public TransactionService(TransactionModule transactionModule, UserModule userModule) {
+    public TransactionService(TransactionModule transactionModule, UserModule userModule, ScheduledTransferModule scheduledTransferModule) {
         this.transactionModule = transactionModule;
         this.userModule = userModule;
+        this.scheduledTransferModule = scheduledTransferModule;
     }
 
     /**
@@ -116,5 +120,49 @@ public class TransactionService {
             transactionModule.createTransaction(transaction);
             return TransactionStatus.COMPLETED;
         }
+    }
+
+    public TransactionStatus scheduledTransfer(ScheduledTransferModel scheduledTransferModel){
+        if (scheduledTransferModel.getAmount() <= 0 || scheduledTransferModel.getAmount() > scheduledTransferModel.getAccountFrom().getBalance()) {
+            scheduledTransferModel.setStatus(TransactionStatus.FAILED);
+            scheduledTransferModule.createScheduledTransfer(scheduledTransferModel);
+            return TransactionStatus.FAILED;
+        } else {
+            List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(scheduledTransferModel.getAccountFrom().getAccountNumber());
+            List<BankUser> accountToUserResults = userModule.findUsersByAccountNumber(scheduledTransferModel.getAccountTo().getAccountNumber());
+
+            Account accountFrom = accountFromUserResults.get(0).getAccount();
+            Account accountTo = accountToUserResults.get(0).getAccount();
+            Long amount = scheduledTransferModel.getAmount();
+
+            int numOccurrences = scheduledTransferModel.getNumOccurrences();
+            double amountPerOccurrence = amount / numOccurrences;
+
+            List<Date> datesTransfer = scheduledTransferModel.calculateDatesTransfer();
+
+            for (Date date : datesTransfer) {
+                if (date.compareTo(new Date()) >= 0) {
+                    scheduledTransferModel.setDate(date);
+                    scheduledTransferModule.createScheduledTransfer(scheduledTransferModel);
+
+                    if (amountPerOccurrence <= 0 || amountPerOccurrence > accountFrom.getBalance()) {
+                        scheduledTransferModel.setStatus(TransactionStatus.FAILED);
+                        scheduledTransferModule.createScheduledTransfer(scheduledTransferModel);
+                        System.out.println("Transferencia parcial fallida. Monto inválido o insuficiente.");
+                    } else {
+                        Long accountFromNewBalance = accountFrom.getBalance() - amount;
+                        accountFrom.setBalance(accountFromNewBalance);
+                        Long accountToNewBalance = accountTo.getBalance() + amount;
+                        accountTo.setBalance(accountToNewBalance);
+
+                        System.out.println("Transferencia parcial exitosa agendada para: " + date);
+                        System.out.println("Balance de " + accountFrom.getOwner().getFirstName() + "= " + accountFrom.getBalance());
+                        System.out.println("Balance de " + accountTo.getOwner().getFirstName() + "= " + accountTo.getBalance());
+                        scheduledTransferModule.createScheduledTransfer(scheduledTransferModel);
+                    }
+                }
+            }
+        }
+        return TransactionStatus.PENDING;
     }
 }

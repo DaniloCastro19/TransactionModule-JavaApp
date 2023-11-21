@@ -30,6 +30,8 @@ import java.util.UUID;
 public class TransactionView extends JFrame {
     private TransactionModule transactionModule;
     private UserModule userModule;
+
+    private ScheduledTransferModule scheduledTransferModule;
     private JLabel labelTitle = new JLabel("  Formulario de transacción:");
     private JTextField accountRootNumberTextField;
     private JTextField originTextFiled;
@@ -45,14 +47,15 @@ public class TransactionView extends JFrame {
     private JButton searchOriginButton = createButton("Buscar cuenta origen");
     private JButton searchDestinyButton = createButton("Buscar cuenta destino");
     private JButton cleanButton = createButton("Limpiar Campos");
-     DecimalValidator numericStringValidator = new DecimalValidator();
+    DecimalValidator numericStringValidator = new DecimalValidator();
     private TransactionStatus transactionStatus;
     private AccountSelection accountSelection;
     private TransactionService transactionService;
     private HighMonthlyAmountAlert highMonthlyAmountAlert;
-    public TransactionView(TransactionModule transactionModule, UserModule userModule) {
+    public TransactionView(TransactionModule transactionModule, UserModule userModule, ScheduledTransferModule scheduledTransferModule) {
         this.transactionModule = transactionModule;
         this.userModule = userModule;
+        this.scheduledTransferModule = scheduledTransferModule;
         transactionStatus = TransactionStatus.PENDING;
         setTitle("Formulario de la transacción");
         setSize(500, 500);
@@ -162,7 +165,7 @@ public class TransactionView extends JFrame {
                         "Realizar");
 
                 if (option == 0) {
-                    transactionService = new TransactionService(transactionModule,userModule);
+                    transactionService = new TransactionService(transactionModule,userModule,scheduledTransferModule);
                     TransactionType transactionType = (TransactionType) transactionTypeComboBox.getSelectedItem();
                     TransactionStatus transactionStatus = null;
                     switch (transactionType){
@@ -275,3 +278,4 @@ public class TransactionView extends JFrame {
                 !additionalDetailsTextField.getText().isEmpty();
     }
 }
+
