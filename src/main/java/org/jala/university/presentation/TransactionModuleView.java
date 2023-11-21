@@ -1,9 +1,6 @@
 package org.jala.university.presentation;
 
-import org.jala.university.domain.CheckModule;
-import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.UserModule;
-import org.jala.university.domain.AccountModule;
+import org.jala.university.domain.*;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +16,7 @@ import java.awt.GridLayout;
 public class TransactionModuleView extends JFrame {
     private CheckModule checkModule;
     private AccountModule accountModule;
+    private ScheduledTransferModule scheduledTransferModule;
     private UserModule userModule;
     private TransactionModule transactionModule;
     private JLabel titleLabel;
@@ -27,11 +25,12 @@ public class TransactionModuleView extends JFrame {
     private JButton transactionHistoryButton;
 
 
-    public TransactionModuleView(AccountModule accountModule, UserModule userModule, TransactionModule transactionModule, CheckModule checkModule) {
+    public TransactionModuleView(AccountModule accountModule, UserModule userModule, TransactionModule transactionModule, CheckModule checkModule, ScheduledTransferModule scheduledTransferModule) {
         this.accountModule = accountModule;
         this.userModule = userModule;
         this.transactionModule = transactionModule;
         this.checkModule = checkModule;
+        this.scheduledTransferModule = scheduledTransferModule;
         initializeUI();
         setTitle("Vista del Modulo de Transacciones");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,7 +81,7 @@ public class TransactionModuleView extends JFrame {
     }
 
     private void performNewTransaction() {
-        TransactionView transactionView = new TransactionView(transactionModule, userModule);
+        TransactionView transactionView = new TransactionView(transactionModule, userModule,scheduledTransferModule);
         initForm(transactionView);
     }
 

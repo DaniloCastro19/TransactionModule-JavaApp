@@ -138,13 +138,13 @@ public class TransactionSummaryView extends JFrame {
     private void descriptionCreatorUI(String description) {
         JLabel descriptionLabel = new JLabel("Descripción: ");
         descriptionLabel.setBounds(LABEL_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                                   LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
+                LABEL_STANDARD_WIDTH, LABEL_FIELD_STANDARD_HEIGHT);
         add(descriptionLabel);
 
         int FIELD_HEIGHT_TEXT_AREA = 100;
         JTextArea descriptionArea = new JTextArea(description);
         descriptionArea.setBounds(FIELD_STANDARD_HORIZONTAL_POSITION, labelAndFieldVerticalPosition,
-                                  FIELD_STANDARD_WIDTH, FIELD_HEIGHT_TEXT_AREA);
+                FIELD_STANDARD_WIDTH, FIELD_HEIGHT_TEXT_AREA);
         descriptionArea.setEnabled(false);
         descriptionArea.setBackground(BACKGROUND_TEXT_FIELD_COLOR);
         descriptionArea.setDisabledTextColor(Color.BLACK);
@@ -154,3 +154,4 @@ public class TransactionSummaryView extends JFrame {
         add(descriptionArea);
     }
 }
+
