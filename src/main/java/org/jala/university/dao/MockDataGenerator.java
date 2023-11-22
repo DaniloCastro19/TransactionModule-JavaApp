@@ -10,15 +10,13 @@ public class MockDataGenerator {
     private final UserDAOMock userDaoMock;
     private final AccountDAOMock accountDaoMock;
     private final TransactionDAOMock transactionDaoMock;
-    private final CheckDAOMock checkDAOMock;
 
     private final ScheduledTransferDAOMock scheduledTransferDAOMock;
 
-    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock, CheckDAOMock checkDAOMock, ScheduledTransferDAOMock scheduledTransferDAOMock) {
+    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock, ScheduledTransferDAOMock scheduledTransferDAOMock) {
         this.userDaoMock = userDaoMock;
         this.accountDaoMock = accountDaoMock;
         this.transactionDaoMock = transactionDaoMock;
-        this.checkDAOMock = checkDAOMock;
         this.scheduledTransferDAOMock = scheduledTransferDAOMock;
     }
 
@@ -59,19 +57,6 @@ public class MockDataGenerator {
                         .description("Transaction " + j + " for User " + i)
                         .build();
                 transactionDaoMock.create(transaction);
-            }
-            for (int checkIndex = 1; checkIndex <=3; checkIndex++){
-                Check check = Check.builder()
-                        .id(UUID.randomUUID())
-                        .beneficiaryName(account.getName())
-                        .date(new Date())
-                        .amount(100L *checkIndex)
-                        .reason("Check " + checkIndex + " for user" + checkIndex)
-                        .currency(Currency.BOB)
-                        .status(CheckStatus.ACTIVE)
-                        .accountFrom(account)
-                        .build();
-                checkDAOMock.create(check);
             }
             for (int transferIndex = 1 ;transferIndex  < 6; transferIndex ++){
                 ScheduledTransferModel scheduledTransfer = ScheduledTransferModel.builder()

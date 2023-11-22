@@ -14,7 +14,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.JTableHeader;
 import org.jala.university.dao.AccountDAOMock;
-import org.jala.university.dao.CheckDAOMock;
 import org.jala.university.dao.MockDataGenerator;
 import org.jala.university.dao.ScheduledTransferDAOMock;
 import org.jala.university.dao.TransactionDAOMock;
@@ -99,18 +98,5 @@ public class ScheduledPaymentsView extends JFrame {
         JComboBox<T> comboBox = new JComboBox<>(items);
         comboBox.setSelectedItem(items[0]);
         return comboBox;
-    }
-    public static void main(String[] args) {
-        UserDAOMock userDAOMock = new UserDAOMock();
-        AccountDAOMock accountDAOMock = new AccountDAOMock();
-        TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
-        CheckDAOMock checkDAOMock = new CheckDAOMock();
-        ScheduledTransferDAOMock scheduledTransferDAOMock = new ScheduledTransferDAOMock();
-        MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock, checkDAOMock, scheduledTransferDAOMock);
-        ScheduledTransferModule scheduledTransferModule= new ScheduledTransferModuleImpl(scheduledTransferDAOMock);
-        UserModule userModule = new UserModuleImpl( accountDAOMock, userDAOMock);
-        dataGenerator.generateMockData();
-        ScheduledPaymentsView view = new ScheduledPaymentsView( userModule, scheduledTransferModule);
-        view.setVisible(true);
     }
 }

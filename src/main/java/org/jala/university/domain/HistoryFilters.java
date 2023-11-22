@@ -25,11 +25,6 @@ public enum HistoryFilters {
             return transactionModule.findTransactionsWithAccountNumber(parameter);
         }
 
-        @Override
-        public List<Check> getChecks(CheckModule checkModule, Map<String, Object> value) {
-            String parameter = (String) value.get("ACCOUNT_NUMBER");
-            return checkModule.findCheckWithAccountNumber(parameter);
-        }
 
         @Override
         public JComponent[] getComponent(HistoryViewInterface view) {
@@ -52,13 +47,6 @@ public enum HistoryFilters {
             return transactionModule.findTransactionsWithNameOrLastName(parameter);
 
         }
-
-        @Override
-        public List<Check> getChecks(CheckModule checkModule, Map<String, Object> value) {
-            String parameter = (String) value.get("ACCOUNT_NAME");
-            return checkModule.findCheckWithName(parameter);
-        }
-
         @Override
         public JComponent[] getComponent(HistoryViewInterface view) {
             return new JComponent[]{view.getNameInput()};
@@ -82,11 +70,6 @@ public enum HistoryFilters {
         }
 
         @Override
-        public List<Check> getChecks(CheckModule checkModule, Map<String, Object> value) {
-            return null;
-        }
-
-        @Override
         public JComponent[] getComponent(HistoryViewInterface view) {
             return new JComponent[]{view.getTransactionTypeComboBox()};
         }
@@ -105,12 +88,6 @@ public enum HistoryFilters {
         public List<Transaction> getTransactions(TransactionModule transactionModule, Map<String, Object> value) {
             String parameter = (String) value.get("TRANSACTION_AMOUNT");
             return transactionModule.finTransactionsWithTransactionAmount(parameter.equals("Maximo"));
-        }
-
-        @Override
-        public List<Check> getChecks(CheckModule checkModule, Map<String, Object> value) {
-            String parameter = (String) value.get("TRANSACTION_AMOUNT");
-            return checkModule.findChecksWithAmount(parameter.equals("Maximo"));
         }
 
         @Override
@@ -145,20 +122,6 @@ public enum HistoryFilters {
             return transactionModule.findTransactionWithDate(dates[0], dates[1]);
         }
 
-        @Override
-        public List<Check> getChecks(CheckModule checkModule, Map<String, Object> parameters) {
-            String dateFilter = (String) parameters.get("TRANSACTION_DATE");
-            DateRangeOption dateRangeOption = DateRangeOption.getByLabel(dateFilter);
-            Date[] dates;
-            if (dateRangeOption == DateRangeOption.CUSTOM_DATE) {
-                Date startDate = (Date) parameters.get("startDate");
-                Date endDate = (Date) parameters.get("endDate");
-                dates = dateRangeOption.getStartAndEndDate(startDate, endDate);
-            } else {
-                dates = dateRangeOption.getStartAndEndDate();
-            }
-            return checkModule.findCheckWithDate(dates[0], dates[1]);
-        }
 
         @Override
         public JComponent[] getComponent(HistoryViewInterface view) {
@@ -180,7 +143,6 @@ public enum HistoryFilters {
 
     public abstract List<Transaction> getTransactions(TransactionModule transactionModule, Map<String, Object> parameters);
 
-    public abstract List<Check> getChecks(CheckModule checkModule, Map<String, Object> parameters);
 
     public abstract JComponent[] getComponent(HistoryViewInterface view);
 }
