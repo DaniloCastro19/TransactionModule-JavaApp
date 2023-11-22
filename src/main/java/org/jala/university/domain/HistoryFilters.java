@@ -1,6 +1,5 @@
 package org.jala.university.domain;
 
-import org.jala.university.model.Check;
 import org.jala.university.model.Transaction;
 import org.jala.university.model.TransactionType;
 
