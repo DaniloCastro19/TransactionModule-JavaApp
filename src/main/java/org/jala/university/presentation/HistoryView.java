@@ -26,13 +26,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -62,6 +56,7 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
     private JTable historyTable;
 
     private TransactionModule transactionModule;
+    private List<Transaction> filteredTransactions;
 
     public HistoryView(TransactionModule transactionModule) {
         this.historyReportGenerator = new HistoryReportGenerator(transactionModule);
@@ -69,7 +64,7 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
         initializeUI();
         setTitle("Historial de Transacciones");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1000, 550);
+        setSize(1200, 550);
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -113,18 +108,51 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
         searchPanel.add(generateReportButton);
         add(searchPanel, BorderLayout.SOUTH);
     }
+
+    private boolean areMultipleAccounts(List<Transaction> transactions) {
+        Set<String> uniqueAccountNumbers = new HashSet<>();
+        for (Transaction transaction : transactions) {
+            uniqueAccountNumbers.add(transaction.getAccountFrom().getAccountNumber());
+            uniqueAccountNumbers.add(transaction.getAccountTo().getAccountNumber());
+        }
+        return uniqueAccountNumbers.size() > 1;
+    }
+
+    private boolean hasSelection() {
+        return historyTable.getSelectedRow() != -1;
+    }
+
+    private boolean hasResults() {
+        return historyTable.getModel().getRowCount() > 0;
+    }
     private void generateReport(ActionEvent e) {
-        String accountNumber = searchInput.getText();
+        if (!hasResults()) {
+            JOptionPane.showMessageDialog(this, "No hay resultados para generar un reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int selectedRowIndex = historyTable.getSelectedRow();
+        if (selectedRowIndex == -1 && areMultipleAccounts(filteredTransactions)) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una transacción para generar el reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String accountNumber;
+        if (areMultipleAccounts(filteredTransactions)) {
+            accountNumber = (String) historyTable.getValueAt(selectedRowIndex, 2);
+        } else {
+            accountNumber = filteredTransactions.get(0).getAccountFrom().getAccountNumber();
+        }
 
         BankUser user = transactionModule.getUserInfoForAccountNumber(accountNumber);
-        if (user != null) {
-            String report = historyReportGenerator.generateReport(accountNumber);
-
-            TransactionReportView reportView = new TransactionReportView(user, report);
-            reportView.setVisible(true);
-        } else {
+        if (user == null) {
             JOptionPane.showMessageDialog(this, "No se encontró un usuario con ese número de cuenta", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        String report = historyReportGenerator.generateReport(accountNumber);
+        TransactionReportView reportView = new TransactionReportView(user, report);
+        reportView.setVisible(true);
     }
     @Override
     public void setupDynamicFilters() {
@@ -232,8 +260,18 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
             String value = filterEnum.getValue(component);
             parameters.put(filterEnum.toString(), value);
         }
-        List<Transaction> transactions = filterEnum.getTransactions(transactionModule, parameters);
-        updateTableModel(transactions);
+        try {
+            JComponent[] component = filterEnum.getComponent(this);
+            String value = filterEnum.getValue(component);
+            if (value == null || value.isEmpty()) {
+                throw new IllegalArgumentException("Campo vacío");
+            }
+            parameters.put(filterEnum.toString(), value);
+            filteredTransactions = filterEnum.getTransactions(transactionModule, parameters);
+            updateTableModel(filteredTransactions);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "Campo Vacio. Ingrese un valor para la búsqueda", "AVISO", JOptionPane.WARNING_MESSAGE);
+        }
     }
     @Override
     public void updateTableModel(List<?> transactionList) {
@@ -241,6 +279,4 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
         tableModel.setTransactionList((List<Transaction>) transactionList);
         tableModel.fireTableDataChanged();
     }
-
-
 }
