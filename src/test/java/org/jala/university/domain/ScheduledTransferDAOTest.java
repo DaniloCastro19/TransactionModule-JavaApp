@@ -29,17 +29,6 @@ class ScheduledTransferDAOTest {
     }
 
     @Test
-    void findByDestinationAccount_SuccessfulFind() {
-        Mockito.when(entityManagerMock.createQuery(Mockito.anyString(), Mockito.eq(ScheduledTransferModel.class)))
-                .thenReturn(queryMock);
-
-        List<ScheduledTransferModel> expectedResults = createScheduledTransferList();
-        Mockito.when(queryMock.getResultList()).thenReturn(expectedResults);
-        List<ScheduledTransferModel> result = scheduledTransferDAO.findByDestinationAccount("destinationAccount");
-        assertEquals(expectedResults, result);
-    }
-
-    @Test
     void findAllScheduledTransfers_SuccessfulFind() {
         Mockito.when(entityManagerMock.createQuery(Mockito.anyString(), Mockito.eq(ScheduledTransferModel.class)))
                 .thenReturn(queryMock);

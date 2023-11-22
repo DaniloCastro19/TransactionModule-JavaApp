@@ -1,30 +1,34 @@
 package org.jala.university.presentation;
 
 import com.toedter.calendar.JDateChooser;
-import org.jala.university.domain.*;
-import org.jala.university.model.Account;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Currency;
-import org.jala.university.model.TransactionStatus;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.BorderFactory;
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridBagLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import org.jala.university.domain.Frequency;
+import org.jala.university.domain.ScheduledTransferModel;
+import org.jala.university.domain.ScheduledTransferModule;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.TransactionService;
+import org.jala.university.domain.UserModule;
+import org.jala.university.model.Account;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.Currency;
+import org.jala.university.model.TransactionStatus;
 
 /**
  * This class is the controller and view combined to be able to schedule scheduled transfers.
@@ -51,8 +55,6 @@ public class ScheduledTransferView extends JFrame {
     private static final String LABEL_FREQUENCY = "Frecuencia de Transferencia:";
     private static final String LABEL_OCCURRENCE_NUM = "Número de Ocurrencias:";
     private static final String LABEL_DETAILS = "Detalles de la Transacción:";
-
-    private ScheduledTransferModel scheduledTransferModel;
 
     public ScheduledTransferView(ScheduledTransferModule scheduledTransferModule, UserModule userModule, TransactionModule transactionModule) {
         this.transactionModule = transactionModule;

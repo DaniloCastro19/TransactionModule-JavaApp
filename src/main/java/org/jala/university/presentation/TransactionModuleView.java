@@ -1,7 +1,5 @@
 package org.jala.university.presentation;
 
-import org.jala.university.domain.*;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,6 +10,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import org.jala.university.domain.AccountModule;
+import org.jala.university.domain.CheckModule;
+import org.jala.university.domain.ScheduledTransferModule;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.UserModule;
 
 public class TransactionModuleView extends JFrame {
     private final CheckModule checkModule;

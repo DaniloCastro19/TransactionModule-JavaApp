@@ -1,5 +1,6 @@
 package org.jala.university.dao;
 
+import org.jala.university.domain.Frequency;
 import org.jala.university.domain.ScheduledTransferModel;
 
 import java.util.UUID;
@@ -33,9 +34,33 @@ public class ScheduledTransferDAOMock extends ScheduledTransferDAO {
     }
 
     @Override
-    public List<ScheduledTransferModel> findByDestinationAccount(String destinationAccount) {
+    public List<ScheduledTransferModel> findDailyTransfers(String accountFrom) {
         return scheduledTransfers.values().stream()
-                .filter(scheduledTransferModel -> scheduledTransferModel.getAccountTo().getAccountNumber().equals(destinationAccount))
+                .filter(scheduledTransferModel -> scheduledTransferModel.getFrequency().equals(Frequency.EVERY_DAY)
+                        && scheduledTransferModel.getAccountFrom().getAccountNumber().equals(accountFrom))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ScheduledTransferModel> findMonthlyTransfers(String accountFrom) {
+        return scheduledTransfers.values().stream()
+                .filter(scheduledTransferModel -> scheduledTransferModel.getFrequency().equals(Frequency.EACH_MONTH)
+                        && scheduledTransferModel.getAccountFrom().getAccountNumber().equals(accountFrom))
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<ScheduledTransferModel> findBiweeklyTransfers(String accountFrom) {
+        return scheduledTransfers.values().stream()
+                .filter(scheduledTransferModel -> scheduledTransferModel.getFrequency().equals(Frequency.EVERY_FIFTEEN_DAYS)
+                        && scheduledTransferModel.getAccountFrom().getAccountNumber().equals(accountFrom))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ScheduledTransferModel> findWeeklyTransfers(String accountFrom) {
+        return scheduledTransfers.values().stream()
+                .filter(scheduledTransferModel -> scheduledTransferModel.getFrequency().equals(Frequency.WEEKLY)
+                        && scheduledTransferModel.getAccountFrom().getAccountNumber().equals(accountFrom))
                 .collect(Collectors.toList());
     }
 

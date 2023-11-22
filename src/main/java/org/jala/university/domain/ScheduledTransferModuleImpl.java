@@ -25,10 +25,26 @@ public class ScheduledTransferModuleImpl implements ScheduledTransferModule {
     public List<ScheduledTransferModel> findByRootAccount(String rootAccount) {
         return scheduledTransferDAOMock.findByRootAccount(rootAccount);
     }
+    @Override
+    public List<ScheduledTransferModel> findDailyTransfers(String accountFrom) {
+        return scheduledTransferDAOMock.findDailyTransfers(accountFrom);
+    }
 
     @Override
-    public List<ScheduledTransferModel> findByDestinationAccount(String destinationAccount) {
-        return scheduledTransferDAOMock.findByDestinationAccount(destinationAccount);
+    public List<ScheduledTransferModel> findMonthlyTransfers(String accountFrom) {
+        return scheduledTransferDAOMock.findMonthlyTransfers(accountFrom);
+    }
+
+    @Override
+    public List<ScheduledTransferModel> findBiweeklyTransfers(String accountFrom) {
+        return scheduledTransferDAOMock.findBiweeklyTransfers(accountFrom);
+
+    }
+
+    @Override
+    public List<ScheduledTransferModel> findWeeklyTransfers(String accountFrom) {
+        return scheduledTransferDAOMock.findWeeklyTransfers(accountFrom);
+
     }
 
     @Override

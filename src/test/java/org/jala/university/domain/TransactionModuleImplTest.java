@@ -1,15 +1,18 @@
 package org.jala.university.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.jala.university.dao.*;
-import org.jala.university.model.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import org.jala.university.dao.*;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TransactionModuleImplTest {
 
@@ -18,14 +21,16 @@ public class TransactionModuleImplTest {
     private TransactionDAOMock transactionDAOMock;
     private TransactionModule transactionModule;
     private CheckDAOMock checkDAOMock;
+    private ScheduledTransferDAOMock scheduledTransferDAOMock;
+
     @BeforeEach
     public void setup() {
         userDAOMock = new UserDAOMock();
         accountDAOMock = new AccountDAOMock();
         transactionDAOMock = new TransactionDAOMock();
         checkDAOMock = new CheckDAOMock();
-
-        MockDataGenerator generator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock,checkDAOMock);
+        scheduledTransferDAOMock = new ScheduledTransferDAOMock();
+        MockDataGenerator generator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock,checkDAOMock, scheduledTransferDAOMock);
         generator.generateMockData();
          transactionModule = new TransactionModuleImpl(transactionDAOMock);
     }
