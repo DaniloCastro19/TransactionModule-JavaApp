@@ -1,39 +1,24 @@
 package org.jala.university.presentation;
 
 import com.toedter.calendar.JDateChooser;
-import org.jala.university.dao.AccountDAOMock;
-import org.jala.university.dao.UserDAOMock;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.dao.CheckDAOMock;
-import org.jala.university.dao.ScheduledTransferDAOMock;
-import org.jala.university.dao.MockDataGenerator;
-import org.jala.university.domain.UserModule;
-import org.jala.university.domain.ScheduledTransferModuleImpl;
-import org.jala.university.domain.TransactionModule;
-import org.jala.university.domain.ScheduledTransferModel;
-import org.jala.university.domain.Frequency;
-import org.jala.university.domain.ScheduledTransferModule;
-import org.jala.university.domain.TransactionService;
-import org.jala.university.domain.TransactionModuleImpl;
-import org.jala.university.domain.UserModuleImpl;
+import org.jala.university.domain.*;
 import org.jala.university.model.Account;
 import org.jala.university.model.BankUser;
 import org.jala.university.model.Currency;
 import org.jala.university.model.TransactionStatus;
 
-import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JButton;
 import javax.swing.BorderFactory;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -173,29 +158,45 @@ public class ScheduledTransferView extends JFrame {
         return buttonPanel;
     }
 
-    public void scheduleTransfer(){
+    public void scheduleTransfer() {
         List<BankUser> accountToUserResults = userModule.findUsersByAccountNumber(destinationAccountTextField.getText());
         List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(rootAccountTextField.getText());
-        if (validateInputFiles()){
+
+        if (validateInputFiles()) {
             Date dateTransfer = dateChooser.getDate();
+
             if (dateTransfer == null) {
                 JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha de transferencia.");
                 return;
             }
-            if (accountToUserResults.isEmpty() || accountFromUserResults.isEmpty()){
+
+            if (accountToUserResults.isEmpty() || accountFromUserResults.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Cuentas de origen y/o destino no válidas. Verifica los números de cuenta.");
-            }else {
+            } else {
+                String amountText = amountTextField.getText();
 
-                TransactionStatus scheduledStatusTransfers = scheduledTransfer();
-                if (scheduledStatusTransfers.equals(TransactionStatus.FAILED)){
-                    JOptionPane.showMessageDialog(this, "Transacción fallida verifique los balances de la cuenta origen.");
-                }else {
-                    JOptionPane.showMessageDialog(this, "Transferencia agenda con éxito.");
+                try {
+                    Long amount = Long.parseLong(amountText);
 
+                    if (amount > 3500) {
+                        JOptionPane.showMessageDialog(this, "El monto del pago programado no puede ser mayor a $3500.", "Alerta", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    TransactionStatus scheduledStatusTransfers = scheduledTransfer();
+
+                    if (scheduledStatusTransfers.equals(TransactionStatus.FAILED)) {
+                        JOptionPane.showMessageDialog(this, "Transacción fallida verifique los balances de la cuenta origen.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Transferencia agendada con éxito.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Pago agendado rechazado. Ingrese un monto válido (número entero).", "Alerta", JOptionPane.WARNING_MESSAGE);
                 }
             }
-        }else {
-            JOptionPane.showMessageDialog(this,"Por favor, Llena todas las casillas.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, llena todas las casillas.");
         }
     }
 
@@ -249,19 +250,5 @@ public class ScheduledTransferView extends JFrame {
     public void cancelTransfer() {
         JOptionPane.showMessageDialog(this, "Transferencia cancelada");
         dispose();
-    }
-
-    public static void main(String[] args) {
-        AccountDAOMock accountDAOMock = new AccountDAOMock();
-        UserDAOMock userDAOMock = new UserDAOMock();
-        TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
-        CheckDAOMock checkDAOMock = new CheckDAOMock();
-        TransactionModule transactionModule = new TransactionModuleImpl(transactionDAOMock);
-        ScheduledTransferDAOMock scheduledTransferDAOMock = new ScheduledTransferDAOMock();
-        UserModule userModule = new UserModuleImpl(accountDAOMock, userDAOMock);
-        ScheduledTransferModule scheduledTransferModule = new ScheduledTransferModuleImpl(scheduledTransferDAOMock);
-        MockDataGenerator mockDataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock, checkDAOMock);
-        mockDataGenerator.generateMockData();
-        SwingUtilities.invokeLater(() -> new ScheduledTransferView(scheduledTransferModule ,userModule, transactionModule));
     }
 }

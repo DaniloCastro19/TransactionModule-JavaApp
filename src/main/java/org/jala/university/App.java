@@ -23,7 +23,6 @@ public class App {
         TransactionModuleView transactionModuleView = new TransactionModuleView(accountModule, userModule, transactionModule, checkModule, scheduledTransferModule);
         initForm(transactionModuleView);
     }
-
     
     private static void initForm(JFrame transactionModuleView) {
         transactionModuleView.setVisible(true);
