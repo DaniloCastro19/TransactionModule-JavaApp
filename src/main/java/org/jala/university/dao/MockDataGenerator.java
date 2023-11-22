@@ -4,7 +4,13 @@ import java.util.Date;
 import java.util.UUID;
 import org.jala.university.domain.Frequency;
 import org.jala.university.domain.ScheduledTransferModel;
-import org.jala.university.model.*;
+import org.jala.university.model.Account;
+import org.jala.university.model.AccountStatus;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.Currency;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
 
 public class MockDataGenerator {
     private final UserDAOMock userDaoMock;

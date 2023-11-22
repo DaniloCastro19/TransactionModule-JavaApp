@@ -10,12 +10,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+
+import org.jala.university.dao.CheckDAO;
 import org.jala.university.domain.AccountModule;
 import org.jala.university.domain.ScheduledTransferModule;
 import org.jala.university.domain.TransactionModule;
 import org.jala.university.domain.UserModule;
+import org.jala.university.model.Check;
 
 public class TransactionModuleView extends JFrame {
+    private CheckDAO checkDAO;
     private final AccountModule accountModule;
     private final ScheduledTransferModule scheduledTransferModule;
     private final UserModule userModule;
@@ -38,6 +42,7 @@ public class TransactionModuleView extends JFrame {
         setSize(1000, 550);
         setLocationRelativeTo(null);
         setVisible(true);
+        checkDAO.getChecksWithAmount(true);
     }
 
     private void initializeUI() {
