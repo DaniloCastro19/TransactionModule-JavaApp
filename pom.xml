@@ -157,9 +157,16 @@
             <execution>
               <goals>
                 <goal>check</goal>
+                <goal>checkstyle</goal>
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <configLocation>YourCheckstyleConfig.xml</configLocation>
+            <reportOutputDirectory>${project.build.directory}/site</reportOutputDirectory>
+            <outputFileFormat>xml</outputFileFormat>
+            <outputFile>${project.build.directory}/site/checkstyle.xml</outputFile>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
