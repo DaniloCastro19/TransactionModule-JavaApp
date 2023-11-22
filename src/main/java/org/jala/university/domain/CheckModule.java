@@ -8,5 +8,6 @@ import java.util.UUID;
 public interface CheckModule {
     void createCheck(Check check);
     List<Check> findCheckWithUUID(UUID checkId);
+    boolean hasSufficientFunds(Check check);
 
 }
