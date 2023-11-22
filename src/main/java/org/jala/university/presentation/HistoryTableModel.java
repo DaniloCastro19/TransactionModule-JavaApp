@@ -1,6 +1,8 @@
 package org.jala.university.presentation;
 
-import org.jala.university.model.*;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -41,9 +43,9 @@ public class HistoryTableModel extends AbstractTableModel {
             case 1:
                 return transaction.getType();
             case 2:
-                return transaction.getAccountFrom().getAccountNumber();
+                return transaction.getAccountFrom() != null ? transaction.getAccountFrom().getAccountNumber() : "N/A";
             case 3:
-                return transaction.getAccountTo().getAccountNumber();
+                return transaction.getAccountTo() != null ? transaction.getAccountTo().getAccountNumber() : "N/A";
             case 4:
                 return transaction.getStatus();
             default:

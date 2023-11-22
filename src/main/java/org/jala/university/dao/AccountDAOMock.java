@@ -37,9 +37,4 @@ public class AccountDAOMock extends AccountDAO {
         return new ArrayList<>(accounts.values());
     }
 
-    public List<Account> findByAccountNumber(String accountNumber) {
-        return accounts.values().stream()
-                .filter(account -> account.getAccountNumber().equals(accountNumber))
-                .collect(Collectors.toList());
-    }
 }

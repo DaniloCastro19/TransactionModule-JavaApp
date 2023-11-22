@@ -23,6 +23,7 @@ public class TransactionModuleView extends JFrame {
     private JButton newTransactionButton;
     private JButton checkButton;
     private JButton transactionHistoryButton;
+    private JButton checkHistoryButton;
 
 
     public TransactionModuleView(AccountModule accountModule, UserModule userModule, TransactionModule transactionModule, CheckModule checkModule, ScheduledTransferModule scheduledTransferModule) {
@@ -59,8 +60,11 @@ public class TransactionModuleView extends JFrame {
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         checkButton = new JButton("Relizar Creacion de Cheque");
+        checkHistoryButton = new JButton("Cobrar cheque");
         checkButton.setPreferredSize(new Dimension(300, 95));
+        checkHistoryButton.setPreferredSize(new Dimension(300, 95));
         bottomButtonPanel.add(checkButton);
+        bottomButtonPanel.add(checkHistoryButton);
         mainButtonsPanel.add(topButtonsPanel);
         mainButtonsPanel.add(bottomButtonPanel);
         add(mainButtonsPanel, BorderLayout.CENTER);
@@ -78,6 +82,12 @@ public class TransactionModuleView extends JFrame {
         newTransactionButton.addActionListener(e -> performNewTransaction());
         transactionHistoryButton.addActionListener(e -> showTransactionHistory());
         checkButton.addActionListener(e -> showCheckView());
+        checkHistoryButton.addActionListener(e -> showHistoryCheckView());
+    }
+
+    private void showHistoryCheckView() {
+        CheckHistoryView checkHistoryView = new CheckHistoryView(checkModule, transactionModule);
+        initForm(checkHistoryView);
     }
 
     private void performNewTransaction() {
