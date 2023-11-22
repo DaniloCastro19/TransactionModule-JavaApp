@@ -1,7 +1,12 @@
 package org.jala.university.presentation;
 
 import com.toedter.calendar.JDateChooser;
-import org.jala.university.dao.*;
+import org.jala.university.dao.AccountDAOMock;
+import org.jala.university.dao.UserDAOMock;
+import org.jala.university.dao.TransactionDAOMock;
+import org.jala.university.dao.CheckDAOMock;
+import org.jala.university.dao.ScheduledTransferDAOMock;
+import org.jala.university.dao.MockDataGenerator;
 import org.jala.university.domain.UserModule;
 import org.jala.university.domain.ScheduledTransferModuleImpl;
 import org.jala.university.domain.TransactionModule;
@@ -61,6 +66,8 @@ public class ScheduledTransferView extends JFrame {
     private static final String LABEL_FREQUENCY = "Frecuencia de Transferencia:";
     private static final String LABEL_OCCURRENCE_NUM = "Número de Ocurrencias:";
     private static final String LABEL_DETAILS = "Detalles de la Transacción:";
+
+    private ScheduledTransferModel scheduledTransferModel;
 
     public ScheduledTransferView(ScheduledTransferModule scheduledTransferModule, UserModule userModule, TransactionModule transactionModule) {
         this.transactionModule = transactionModule;
@@ -183,7 +190,7 @@ public class ScheduledTransferView extends JFrame {
                 if (scheduledStatusTransfers.equals(TransactionStatus.FAILED)){
                     JOptionPane.showMessageDialog(this, "Transacción fallida verifique los balances de la cuenta origen.");
                 }else {
-                    JOptionPane.showMessageDialog(this, "Transferencia realizada.");
+                    JOptionPane.showMessageDialog(this, "Transferencia agenda con éxito.");
 
                 }
             }
@@ -224,6 +231,8 @@ public class ScheduledTransferView extends JFrame {
                 .details(detailsTextField.getText())
                 .build();
 
+        List<Date> scheduledDates = scheduledTransferModel.calculateDatesTransfer();
+        ScheduledTransferAlert.showScheduledTransferAlert(scheduledDates, scheduledTransferModel);
         TransactionStatus transactionStatus = transactionService.scheduledTransfer(scheduledTransferModel);
         return transactionStatus;
     }
