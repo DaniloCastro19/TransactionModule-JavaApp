@@ -20,7 +20,6 @@ public class TransactionModuleImplTest {
     private AccountDAOMock accountDAOMock;
     private TransactionDAOMock transactionDAOMock;
     private TransactionModule transactionModule;
-    private CheckDAOMock checkDAOMock;
     private ScheduledTransferDAOMock scheduledTransferDAOMock;
 
     @BeforeEach
@@ -28,9 +27,8 @@ public class TransactionModuleImplTest {
         userDAOMock = new UserDAOMock();
         accountDAOMock = new AccountDAOMock();
         transactionDAOMock = new TransactionDAOMock();
-        checkDAOMock = new CheckDAOMock();
         scheduledTransferDAOMock = new ScheduledTransferDAOMock();
-        MockDataGenerator generator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock,checkDAOMock, scheduledTransferDAOMock);
+        MockDataGenerator generator = new MockDataGenerator(userDAOMock, accountDAOMock, transactionDAOMock, scheduledTransferDAOMock);
         generator.generateMockData();
          transactionModule = new TransactionModuleImpl(transactionDAOMock);
     }

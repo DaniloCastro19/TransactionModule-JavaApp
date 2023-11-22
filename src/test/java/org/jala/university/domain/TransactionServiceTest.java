@@ -21,8 +21,7 @@ class TransactionServiceTest {
     private UserModule userModule = new UserModuleImpl(accountDAOMock, userDAOMock);
     private TransactionModule transactionModule = new TransactionModuleImpl(transactionDAOMock);
     private TransactionService transactionService = new TransactionService(transactionModule,userModule,scheduledTransferModule);
-    private CheckDAOMock checkDAOMock = new CheckDAOMock();
-    private MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock,transactionDAOMock, checkDAOMock, scheduledTransferDAOMock);
+    private MockDataGenerator dataGenerator = new MockDataGenerator(userDAOMock, accountDAOMock,transactionDAOMock, scheduledTransferDAOMock);
     private List<BankUser> accountToUserResults;
     private List<BankUser> accountFromUserResults;
     private Account accountTo;
