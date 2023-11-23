@@ -4,6 +4,7 @@ package org.jala.university.presentation;
 import lombok.Data;
 import org.jala.university.domain.HistoryFilters;
 import org.jala.university.domain.HistoryReportGenerator;
+import org.jala.university.domain.HistoryViewInterface;
 import org.jala.university.domain.TransactionModule;
 import org.jala.university.model.BankUser;
 import org.jala.university.model.Transaction;
@@ -226,7 +227,7 @@ public class HistoryView extends JFrame {
         String selectedFilter = (String) filterTypeComboBox.getSelectedItem();
         HistoryFilters filterEnum = historyFiltersMap.get(selectedFilter);
 
-        JComponent[] component = filterEnum.getComponent(this);
+        JComponent[] component = filterEnum.getComponent((HistoryViewInterface) this);
         String value = filterEnum.getValue(component);
 
         Map<String, Object> parameters = new HashMap<>();
