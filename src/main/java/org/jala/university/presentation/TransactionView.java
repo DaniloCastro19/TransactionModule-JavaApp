@@ -1,16 +1,10 @@
 package org.jala.university.presentation;
 
-import org.jala.university.Utils.Validator.DecimalValidator;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.domain.*;
-import org.jala.university.model.Account;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Currency;
-import org.jala.university.model.Transaction;
-import org.jala.university.model.TransactionStatus;
-import org.jala.university.model.TransactionType;
-import org.jala.university.validationMonthlyAmount.HighMonthlyAmountAlert;
-
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -22,11 +16,19 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import java.awt.Color;
-import java.awt.GridLayout;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import org.jala.university.Utils.Validator.DecimalValidator;
+import org.jala.university.dao.TransactionDAOMock;
+import org.jala.university.domain.ScheduledTransferModule;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.TransactionService;
+import org.jala.university.domain.UserModule;
+import org.jala.university.model.Account;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.Currency;
+import org.jala.university.model.Transaction;
+import org.jala.university.model.TransactionStatus;
+import org.jala.university.model.TransactionType;
+import org.jala.university.validationMonthlyAmount.HighMonthlyAmountAlert;
 public class TransactionView extends JFrame {
     private TransactionModule transactionModule;
     private UserModule userModule;
@@ -69,6 +71,17 @@ public class TransactionView extends JFrame {
 
         TransactionDAOMock transactionDAOMock = new TransactionDAOMock();
         highMonthlyAmountAlert = new HighMonthlyAmountAlert(transactionDAOMock);
+
+        transactionTypeComboBox.addActionListener(e -> {
+            TransactionType selectedType = (TransactionType) transactionTypeComboBox.getSelectedItem();
+            if (selectedType == TransactionType.WITHDRAWAL){
+                searchDestinyButton.setEnabled(false);
+                addresseeAccountNumberTextField.setText("");
+                addresseeTextFiled.setText("");
+            } else {
+                searchDestinyButton.setEnabled(true);
+            }
+        });
 
     }
 
@@ -170,17 +183,19 @@ public class TransactionView extends JFrame {
                     TransactionStatus transactionStatus = null;
                     switch (transactionType){
                         case DEPOSIT:
+                            transactionStatus = makeDeposit();
                             break;
                         case WITHDRAWAL:
+                            transactionStatus = makeWithdrawal();
                             break;
                         case TRANSFER:
                             transactionStatus = makeTransfer();
-
+                            break;
                     }
                     if (transactionStatus == TransactionStatus.COMPLETED){
                         JOptionPane.showMessageDialog(this, "Transacción exitosa.");
                     }else {
-                        JOptionPane.showMessageDialog(this, "Transacción Fallida. Verifique los balances de la cuenta.");
+                        JOptionPane.showMessageDialog(this, "Transacción Fallida. Verifique los balances o el tipo de moneda de la cuenta.");
                     }
                 }
             }
@@ -219,11 +234,11 @@ public class TransactionView extends JFrame {
         });
     }
 
-    private TransactionStatus makeTransfer(){
+    private TransactionStatus makeTransfer() {
         Currency currency = (Currency) currencyComboBox.getSelectedItem();
         List<BankUser> accountToUserResults = userModule.findUsersByAccountNumber(addresseeAccountNumberTextField.getText());
         List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
-        Account accountTo= accountToUserResults.get(0).getAccount();
+        Account accountTo = accountToUserResults.get(0).getAccount();
         Account accountFrom = accountFromUserResults.get(0).getAccount();
         Transaction transaction = Transaction.builder()
                 .id(UUID.randomUUID())
@@ -245,7 +260,101 @@ public class TransactionView extends JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Esta seguro que quiere continuar?", "Confirmacion", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_NO_OPTION) {
-            return transactionService.transfer(transaction);
+            if (!isvalidCurrecy(transaction)) {
+                JOptionPane.showMessageDialog(this, "No se puede completar la transacción. El tipo de moneda de la cuenta no coincide.");
+            } else {
+                return transactionService.transfer(transaction);
+            }
+        }else {
+            return TransactionStatus.FAILED;
+        }
+        return transactionStatus;
+    }
+
+    private TransactionStatus makeDeposit(){
+        Currency currency = (Currency) currencyComboBox.getSelectedItem();
+        List<BankUser> recipientUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
+        Account recipientAccount = recipientUserResults.get(0).getAccount();
+
+        Transaction transaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(getCurrentDate())
+                .status(TransactionStatus.PENDING)
+                .type(TransactionType.DEPOSIT)
+                .currency(currency)
+                .amount(Long.valueOf(amountTextField.getText()))
+                .description(additionalDetailsTextField.getText())
+                .accountTo(recipientAccount)
+                .build();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("Realizando depósito...");
+            Long depositAmount = Long.valueOf(amountTextField.getText());
+
+            System.out.println("Balance anterior de la cuenta destinataria: " + recipientAccount.getBalance());
+
+            transactionService.deposit(
+                    recipientAccount.getAccountNumber(),
+                    Long.valueOf(amountTextField.getText()),
+                    additionalDetailsTextField.getText(),
+                    currency,
+                    getCurrentDate()
+            );
+
+            System.out.println("Depósito de " + depositAmount + " realizado exitosamente.");
+            System.out.println("Nuevo balance de la cuenta destinataria: " + (recipientAccount.getBalance() + depositAmount));
+            String receipt = ReceiptGenerator.generateReceipt(transaction);
+            JOptionPane.showMessageDialog(null, receipt, "RECIBO", JOptionPane.INFORMATION_MESSAGE);
+
+            return TransactionStatus.COMPLETED;
+        } else {
+            return TransactionStatus.FAILED;
+        }
+
+    }
+    private  TransactionStatus makeWithdrawal(){
+        Currency currency = (Currency) currencyComboBox.getSelectedItem();
+        List<BankUser> sourceUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
+        Account sourceAccount = sourceUserResults.get(0).getAccount();
+
+        Transaction transaction = Transaction.builder()
+                .id(UUID.randomUUID())
+                .date(getCurrentDate())
+                .status(TransactionStatus.PENDING)
+                .type(TransactionType.WITHDRAWAL)
+                .currency(currency)
+                .amount(Long.valueOf(amountTextField.getText()))
+                .description(additionalDetailsTextField.getText())
+                .accountFrom(sourceAccount)
+                .build();
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("Realizando retiro...");
+            Long withdrawalAmount = Long.valueOf(amountTextField.getText());
+
+            System.out.println("Balance anterior de la cuenta origen: " + sourceAccount.getBalance());
+            boolean withdrawalSuccessful = transactionService.withdrawal(
+                    sourceAccount.getAccountNumber(),
+                    Long.valueOf(amountTextField.getText()),
+                    additionalDetailsTextField.getText(),
+                    currency,
+                    getCurrentDate()
+            );
+            if (withdrawalSuccessful) {
+                sourceAccount = userModule.findUsersByAccountNumber(sourceAccount.getAccountNumber()).get(0).getAccount();
+                System.out.println("Retiro de " + withdrawalAmount + " realizado exitosamente.");
+                System.out.println("Nuevo balance de la cuenta origen: " + sourceAccount.getBalance());
+                String receipt = ReceiptGenerator.generateReceipt(transaction);
+                JOptionPane.showMessageDialog(null, receipt, "RECIBO", JOptionPane.INFORMATION_MESSAGE);
+                return TransactionStatus.COMPLETED;
+            } else {
+                System.out.println("Saldo insuficiente para el retiro.");
+                return TransactionStatus.FAILED;
+            }
         } else {
             return TransactionStatus.FAILED;
         }
@@ -253,6 +362,9 @@ public class TransactionView extends JFrame {
     private Date getCurrentDate() {
         Date dateFormat = new Date();
         return dateFormat;
+    }
+    public boolean isvalidCurrecy(Transaction transaction){
+        return transaction.getCurrency().equals(transaction.getAccountTo().getCurrency());
     }
 
     private class JTextFieldLimit extends PlainDocument {
@@ -272,10 +384,15 @@ public class TransactionView extends JFrame {
         }
     }
     private boolean areFieldsValidated() {
-        return !addresseeAccountNumberTextField.getText().isEmpty() &&
-                !addresseeTextFiled.getText().isEmpty() &&
-                !amountTextField.getText().isEmpty() &&
-                !additionalDetailsTextField.getText().isEmpty();
+        TransactionType selectedType = (TransactionType) transactionTypeComboBox.getSelectedItem();
+        if (selectedType == TransactionType.WITHDRAWAL){
+            return !accountRootNumberTextField.getText().isEmpty();
+        } else {
+            return !addresseeAccountNumberTextField.getText().isEmpty() &&
+                    !addresseeTextFiled.getText().isEmpty() &&
+                    !amountTextField.getText().isEmpty() &&
+                    !additionalDetailsTextField.getText().isEmpty();
+        }
     }
 }
 

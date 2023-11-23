@@ -33,18 +33,19 @@ public class TransactionService {
      * It creates a new transaction record with a DEPOSIT type, updates the source account balance,
      * and saves the transaction to the database.
      *
-     * @param recipientAccountID the unique identifier of the recipient account to which funds are to be deposited
-     * @param amount            the amount of money to deposit
-     * @param description       a description of the transaction for record-keeping purposes
-     * @param currency          the currency in which the deposit is made
-     * @param date              the date when the transaction is to be executed
+     * @param recipientAccountNumber the unique identifier of the recipient account to which funds are to be deposited
+     * @param amount             the amount of money to deposit
+     * @param description        a description of the transaction for record-keeping purposes
+     * @param currency           the currency in which the deposit is made
+     * @param date               the date when the transaction is to be executed
      */
     @Transactional
-    public void deposit(UUID recipientAccountID, Long amount, String description, Currency currency, Date date) {
-        Account recipientAccount = userModule.findUserById(recipientAccountID);
+    public void deposit(String recipientAccountNumber, Long amount, String description, Currency currency, Date date) {
+        List<BankUser> recipientUserResults = userModule.findUsersByAccountNumber(recipientAccountNumber);
+        Account recipientAccount = recipientUserResults.get(0).getAccount();
 
-        recipientAccount.setBalance(recipientAccount.getBalance()+amount);
-        userModule.update(recipientAccount);
+
+        recipientAccount.setBalance(recipientAccount.getBalance() + amount);
 
         Transaction depositTransaction = Transaction.builder()
                 .id(UUID.randomUUID())
@@ -63,13 +64,14 @@ public class TransactionService {
     /**
      * Processes a withdrawal transaction, deducting an amount from a source account.
      *
-     * @param sourceAccountID  the unique identifier of the source account
+     * @param sourceAccountNumber  the unique identifier of the source account
      * @param amount           the amount to withdraw
      * @return true if the withdrawal was successful, false if there were insufficient funds
      */
     @Transactional
-    public boolean withdrawal(UUID sourceAccountID, Long amount, String description, Currency currency, Date date) {
-        Account sourceAccount = userModule.findUserById(sourceAccountID);
+    public boolean withdrawal(String sourceAccountNumber, Long amount, String description, Currency currency, Date date) {
+        List<BankUser> sourceUserResults = userModule.findUsersByAccountNumber(sourceAccountNumber);
+        Account sourceAccount = sourceUserResults.get(0).getAccount();
 
         if (sourceAccount.getBalance() < amount) {
             return false;

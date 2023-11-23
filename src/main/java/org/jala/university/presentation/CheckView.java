@@ -1,52 +1,44 @@
 package org.jala.university.presentation;
 
-import org.jala.university.Utils.Validator.AlphaStringValidator;
 import org.jala.university.Utils.Validator.DecimalValidator;
 import org.jala.university.Utils.Validator.IntegerValidator;
 import org.jala.university.Utils.Validator.StringValidator;
 import org.jala.university.Utils.Validator.Validator;
-import org.jala.university.dao.AccountDAOMock;
-import org.jala.university.dao.CheckDAOMock;
-import org.jala.university.dao.MockDataGenerator;
-import org.jala.university.dao.TransactionDAOMock;
-import org.jala.university.dao.UserDAOMock;
 import org.jala.university.domain.CheckModule;
-import org.jala.university.domain.CheckModuleImpl;
 import org.jala.university.domain.UserModule;
-import org.jala.university.domain.UserModuleImpl;
-import org.jala.university.model.Account;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Check;
-import org.jala.university.model.CheckStatus;
 import org.jala.university.model.Currency;
+import org.jala.university.model.BankUser;
+import org.jala.university.model.CheckStatus;
+import org.jala.university.model.Account;
+import org.jala.university.model.Check;
 
-import javax.swing.JButton;
+import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JButton;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 public class CheckView extends JFrame {
-    private CheckModule checkModule;
-    private UserModule userModule;
+    private final CheckModule checkModule;
+    private final UserModule userModule;
 
     private JTextField accountNumberTextField;
     private JTextField beneficiaryNameTextField;
@@ -109,6 +101,7 @@ public class CheckView extends JFrame {
         addEventListeners();
         getContentPane().add(panel);
     }
+
     private void addComponentToPanel(JPanel panel, GridBagConstraints c, Component component, int x, int y) {
         c.gridx = x;
         c.gridy = y;
@@ -135,50 +128,85 @@ public class CheckView extends JFrame {
             });
         }
     }
-    private void addEventListeners(){
-        selectAccountButton.addActionListener(e -> {
-            AccountSelection accountSelection = new AccountSelection(userModule, accountData -> {
-                accountNumberTextField.setText(accountData[0]);
-                beneficiaryNameTextField.setText(accountData[1] + " " + accountData[2]);
-            });
-            accountSelection.setVisible(true);
-        });
-        printCheckButton.addActionListener(e ->{
-            StringBuilder result = new StringBuilder();
-            result.append("N° de Cuenta de Origen: ").append(accountNumberTextField.getText()).append("\n");
-            result.append("Nombre del beneficiario: ").append(beneficiaryNameTextField.getText()).append("\n");
-            result.append("Monto: ").append(amountField.getText()).append("\n");
-            result.append("Motivo: ").append(reasonField.getText()).append("\n");
-            result.append("Tipo de Moneda: ").append(currencyComboBox.getSelectedItem()).append("\n");
-            this.setResult(result.toString());
-            JOptionPane.showMessageDialog(this, result.toString(), "Imprimiendo Cheque", JOptionPane.INFORMATION_MESSAGE);
-            JOptionPane.showMessageDialog(this, "Estado de cheque." + result
-                    , "Cheque impreso - Completado", JOptionPane.INFORMATION_MESSAGE);
-            cleanFields();
-            printCheckButton.setEnabled(false);
-        });
-        generateCheckButton.addActionListener(e -> {
-            List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(accountNumberTextField.getText());
-            if (!areEmptyFields()) {
-                JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (accountFromUserResults.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Cuenta inexistente detectada. Por favor ingrese cuentas existentes.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
-                if (confirm == JOptionPane.OK_OPTION) {
-                    CheckStatus checkStatus = makeCheck();
-                    if (checkStatus.equals(CheckStatus.ACTIVE)) {
-                        JOptionPane.showMessageDialog(this, "Cheque emitido con éxito.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        dateTimeVisible = true;
-                        timeDateGenerationLabel.setVisible(dateTimeVisible);
-                        printCheckButton.setEnabled(true);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Cheque rechazado, verifique el balance de la cuenta de origen.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        });
+
+    private void addEventListeners() {
+        selectAccountButton.addActionListener(e -> handleAccountSelection());
+        printCheckButton.addActionListener(e -> handlePrintCheck());
+        generateCheckButton.addActionListener(e -> handleGenerateCheck());
     }
+
+    private void handleAccountSelection() {
+        AccountSelection accountSelection = new AccountSelection(userModule, accountData -> {
+            accountNumberTextField.setText(accountData[0]);
+            beneficiaryNameTextField.setText(accountData[1] + " " + accountData[2]);
+        });
+        accountSelection.setVisible(true);
+    }
+
+    private void handlePrintCheck() {
+        StringBuilder result = new StringBuilder();
+        result.append("N° de Cuenta de Origen: ").append(accountNumberTextField.getText()).append("\n");
+        result.append("Nombre del beneficiario: ").append(beneficiaryNameTextField.getText()).append("\n");
+        result.append("Monto: ").append(amountField.getText()).append("\n");
+        result.append("Motivo: ").append(reasonField.getText()).append("\n");
+        result.append("Tipo de Moneda: ").append(currencyComboBox.getSelectedItem()).append("\n");
+        setResult(result.toString());
+        JOptionPane.showMessageDialog(this, result.toString(), "Imprimiendo Cheque", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Estado de cheque." + result
+                , "Cheque impreso - Completado", JOptionPane.INFORMATION_MESSAGE);
+        cleanFields();
+        printCheckButton.setEnabled(false);
+    }
+
+    private void handleGenerateCheck() {
+        List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(accountNumberTextField.getText());
+
+        if (!areEmptyFields()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (accountFromUserResults.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Cuenta inexistente detectada. Por favor ingrese cuentas existentes.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String amountText = amountField.getText().trim();
+        if (!isInteger(amountText)) {
+            JOptionPane.showMessageDialog(this, "Por favor ingresa un valor entero en monto.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        BankUser accountFromUser = accountFromUserResults.get(0);
+        long amount = Long.parseLong(amountText);
+        if (accountFromUser.getAccount().getBalance() < amount) {
+            JOptionPane.showMessageDialog(this, "Saldo insuficiente para generar el cheque.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de generar el cheque?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+        if (confirm == JOptionPane.OK_OPTION) {
+            CheckStatus checkStatus = makeCheck();
+            if (checkStatus.equals(CheckStatus.ACTIVE)) {
+                JOptionPane.showMessageDialog(this, "Cheque emitido con éxito.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dateTimeVisible = true;
+                timeDateGenerationLabel.setVisible(dateTimeVisible);
+                printCheckButton.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Cheque rechazado, verifique el balance de la cuenta de origen.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private CheckStatus makeCheck(){
         List<BankUser> accountFromUserResults = userModule.findUsersByAccountNumber(accountNumberTextField.getText());
         Account accountFrom = accountFromUserResults.get(0).getAccount();
@@ -194,10 +222,12 @@ public class CheckView extends JFrame {
         checkModule.createCheck(check);
         return check.getStatus();
     }
+
     private boolean areEmptyFields() {
         return  !amountField.getText().isEmpty() &&
                 !reasonField.getText().isEmpty();
     }
+
     private Date getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
@@ -215,5 +245,4 @@ public class CheckView extends JFrame {
         reasonField.setText("");
         resultArea.setText("");
     }
-
 }

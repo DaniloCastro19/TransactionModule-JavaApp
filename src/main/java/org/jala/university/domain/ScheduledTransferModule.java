@@ -12,7 +12,12 @@ public interface ScheduledTransferModule {
 
     List<ScheduledTransferModel> findByRootAccount(String rootAccount);
 
-    List<ScheduledTransferModel> findByDestinationAccount(String destinationAccount);
+    List<ScheduledTransferModel> findDailyTransfers(String accountFrom);
+    List<ScheduledTransferModel> findMonthlyTransfers(String accountFrom);
+
+    List<ScheduledTransferModel> findBiweeklyTransfers(String accountFrom);
+
+    List<ScheduledTransferModel> findWeeklyTransfers(String accountFrom);
 
     List<ScheduledTransferModel> findAllScheduledTransfers();
 

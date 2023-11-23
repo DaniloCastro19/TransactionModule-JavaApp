@@ -1,7 +1,5 @@
 package org.jala.university.presentation;
 
-import org.jala.university.domain.*;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,18 +10,24 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import org.jala.university.domain.AccountModule;
+import org.jala.university.domain.CheckModule;
+import org.jala.university.domain.ScheduledTransferModule;
+import org.jala.university.domain.TransactionModule;
+import org.jala.university.domain.UserModule;
 
 public class TransactionModuleView extends JFrame {
-    private CheckModule checkModule;
-    private AccountModule accountModule;
-    private ScheduledTransferModule scheduledTransferModule;
-    private UserModule userModule;
-    private TransactionModule transactionModule;
+    private final CheckModule checkModule;
+    private final AccountModule accountModule;
+    private final ScheduledTransferModule scheduledTransferModule;
+    private final UserModule userModule;
+    private final TransactionModule transactionModule;
     private JLabel titleLabel;
     private JButton newTransactionButton;
     private JButton checkButton;
     private JButton transactionHistoryButton;
-
+    private JButton checkHistoryButton;
+    private JButton ScheduledTransactionButton;
 
     public TransactionModuleView(AccountModule accountModule, UserModule userModule, TransactionModule transactionModule, CheckModule checkModule, ScheduledTransferModule scheduledTransferModule) {
         this.accountModule = accountModule;
@@ -58,9 +62,15 @@ public class TransactionModuleView extends JFrame {
         topButtonsPanel.add(transactionHistoryButton);
         JPanel bottomButtonPanel = new JPanel();
         bottomButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        checkButton = new JButton("Relizar Creacion de Cheque");
+        checkButton = new JButton("Realizar Creación de Cheque");
+        checkHistoryButton = new JButton("Cobrar cheque");
         checkButton.setPreferredSize(new Dimension(300, 95));
+        checkHistoryButton.setPreferredSize(new Dimension(300, 95));
+        ScheduledTransactionButton = new JButton("Agendar Pago Programado");
+        ScheduledTransactionButton.setPreferredSize(new Dimension(300, 95));
+        topButtonsPanel.add(ScheduledTransactionButton);
         bottomButtonPanel.add(checkButton);
+        bottomButtonPanel.add(checkHistoryButton);
         mainButtonsPanel.add(topButtonsPanel);
         mainButtonsPanel.add(bottomButtonPanel);
         add(mainButtonsPanel, BorderLayout.CENTER);
@@ -78,6 +88,17 @@ public class TransactionModuleView extends JFrame {
         newTransactionButton.addActionListener(e -> performNewTransaction());
         transactionHistoryButton.addActionListener(e -> showTransactionHistory());
         checkButton.addActionListener(e -> showCheckView());
+        checkHistoryButton.addActionListener(e -> showHistoryCheckView());
+        ScheduledTransactionButton.addActionListener(e -> performScheduledTransaction());
+    }
+    private void performScheduledTransaction() {
+        ScheduledTransferView scheduledTransferView = new ScheduledTransferView(scheduledTransferModule, userModule, transactionModule);
+        initForm(scheduledTransferView);
+    }
+
+    private void showHistoryCheckView() {
+        CheckHistoryView checkHistoryView = new CheckHistoryView(checkModule, transactionModule);
+        initForm(checkHistoryView);
     }
 
     private void performNewTransaction() {
@@ -98,6 +119,4 @@ public class TransactionModuleView extends JFrame {
     private void initForm(JFrame view) {
         view.setVisible(true);
     }
-
-
 }

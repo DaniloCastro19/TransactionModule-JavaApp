@@ -9,7 +9,11 @@ import org.jala.university.model.Account;
 import org.jala.university.model.Currency;
 import org.jala.university.model.TransactionStatus;
 
-import java.util.*;
+import java.util.UUID;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Model represents a scheduled transfer.

@@ -1,17 +1,10 @@
 package org.jala.university.dao;
 
-import org.jala.university.model.Account;
-import org.jala.university.model.AccountStatus;
-import org.jala.university.model.BankUser;
-import org.jala.university.model.Check;
-import org.jala.university.model.CheckStatus;
-import org.jala.university.model.Currency;
-import org.jala.university.model.Transaction;
-import org.jala.university.model.TransactionStatus;
-import org.jala.university.model.TransactionType;
-
 import java.util.Date;
 import java.util.UUID;
+import org.jala.university.domain.Frequency;
+import org.jala.university.domain.ScheduledTransferModel;
+import org.jala.university.model.*;
 
 public class MockDataGenerator {
     private final UserDAOMock userDaoMock;
@@ -19,11 +12,14 @@ public class MockDataGenerator {
     private final TransactionDAOMock transactionDaoMock;
     private final CheckDAOMock checkDAOMock;
 
-    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock, CheckDAOMock checkDAOMock) {
+    private final ScheduledTransferDAOMock scheduledTransferDAOMock;
+
+    public MockDataGenerator(UserDAOMock userDaoMock, AccountDAOMock accountDaoMock, TransactionDAOMock transactionDaoMock, CheckDAOMock checkDAOMock, ScheduledTransferDAOMock scheduledTransferDAOMock) {
         this.userDaoMock = userDaoMock;
         this.accountDaoMock = accountDaoMock;
         this.transactionDaoMock = transactionDaoMock;
         this.checkDAOMock = checkDAOMock;
+        this.scheduledTransferDAOMock = scheduledTransferDAOMock;
     }
 
     public void generateMockData() {
@@ -76,6 +72,22 @@ public class MockDataGenerator {
                         .accountFrom(account)
                         .build();
                 checkDAOMock.create(check);
+            }
+            for (int transferIndex = 1 ;transferIndex  < 6; transferIndex ++){
+                ScheduledTransferModel scheduledTransfer = ScheduledTransferModel.builder()
+                        .id(UUID.randomUUID())
+                        .amount(100L * transferIndex)
+                        .accountFrom(account)
+                        .accountTo(account)
+                        .currency(Currency.USD)
+                        .date(new Date("11/30/2023"))
+                        .status(TransactionStatus.PENDING)
+                        .frequency(Frequency.EACH_MONTH)
+                        .numOccurrences(2)
+                        .details("Scheduled Transfer " + transferIndex + " for User " + transferIndex)
+                        .build();
+
+                scheduledTransferDAOMock.create(scheduledTransfer);
             }
         }
     }
