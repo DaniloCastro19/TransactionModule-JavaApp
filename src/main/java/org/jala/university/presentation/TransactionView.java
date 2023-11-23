@@ -78,6 +78,10 @@ public class TransactionView extends JFrame {
                 searchDestinyButton.setEnabled(false);
                 addresseeAccountNumberTextField.setText("");
                 addresseeTextFiled.setText("");
+            } else if (selectedType == TransactionType.DEPOSIT) {
+                searchOriginButton.setEnabled(false);
+                accountRootNumberTextField.setText("");
+                originTextFiled.setText("");
             } else {
                 searchDestinyButton.setEnabled(true);
             }
@@ -273,7 +277,7 @@ public class TransactionView extends JFrame {
 
     private TransactionStatus makeDeposit(){
         Currency currency = (Currency) currencyComboBox.getSelectedItem();
-        List<BankUser> recipientUserResults = userModule.findUsersByAccountNumber(accountRootNumberTextField.getText());
+        List<BankUser> recipientUserResults = userModule.findUsersByAccountNumber(addresseeAccountNumberTextField.getText());
         Account recipientAccount = recipientUserResults.get(0).getAccount();
 
         Transaction transaction = Transaction.builder()
