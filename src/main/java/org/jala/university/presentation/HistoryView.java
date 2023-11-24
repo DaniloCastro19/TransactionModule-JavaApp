@@ -1,6 +1,5 @@
 package org.jala.university.presentation;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.jala.university.domain.HistoryFilters;
@@ -33,7 +32,7 @@ import java.util.*;
 public class HistoryView extends JFrame implements HistoryViewInterface {
     private HistoryReportGenerator historyReportGenerator;
     private JComboBox<String> filterTypeComboBox;
-    private JComboBox<String> transactionTypeFilterComboBox;
+    private JComboBox<String> transactionTypeComboBox;
     private JComboBox amountInput;
     private JTextField accountNumberInput;
     private JTextField nameInput;
@@ -45,7 +44,6 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
             "Filtrar por Monto", HistoryFilters.TRANSACTION_AMOUNT,
             "Filtrar por Fechas", HistoryFilters.TRANSACTION_DATE
     );
-    private JComboBox<String> transactionTypeComboBox;
     private JComboBox<String> dateRangeComboBox;
     private JComboBox<Date> startDateComboBox;
     private JComboBox<Date> endDateComboBox;
@@ -57,6 +55,8 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
 
     private TransactionModule transactionModule;
     private List<Transaction> filteredTransactions;
+    private Map<String, JPanel> dynamicFilterPanels = new HashMap<>();
+
 
     public HistoryView(TransactionModule transactionModule) {
         this.historyReportGenerator = new HistoryReportGenerator(transactionModule);
@@ -126,70 +126,86 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
         return historyTable.getModel().getRowCount() > 0;
     }
     private void generateReport(ActionEvent e) {
-        if (!hasResults()) {
-            JOptionPane.showMessageDialog(this, "No hay resultados para generar un reporte", "Error", JOptionPane.ERROR_MESSAGE);
+        if (!validateReportGeneration()) {
             return;
         }
 
-        int selectedRowIndex = historyTable.getSelectedRow();
-        if (selectedRowIndex == -1 && areMultipleAccounts(filteredTransactions)) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona una transacción para generar el reporte", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String accountNumber;
-        if (areMultipleAccounts(filteredTransactions)) {
-            accountNumber = (String) historyTable.getValueAt(selectedRowIndex, 2);
-        } else {
-            accountNumber = filteredTransactions.get(0).getAccountFrom().getAccountNumber();
-        }
-
-        BankUser user = transactionModule.getUserInfoForAccountNumber(accountNumber);
-        if (user == null) {
+        String accountNumber = getAccountNumber();
+        if (accountNumber == null) {
             JOptionPane.showMessageDialog(this, "No se encontró un usuario con ese número de cuenta", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        generateAndDisplayReport(accountNumber);
+    }
+
+    private boolean validateReportGeneration() {
+        if (!hasResults()) {
+            JOptionPane.showMessageDialog(this, "No hay resultados para generar un reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (historyTable.getSelectedRow() == -1 && areMultipleAccounts(filteredTransactions)) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una transacción para generar el reporte", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private String getAccountNumber() {
+        int selectedRowIndex = historyTable.getSelectedRow();
+        if (areMultipleAccounts(filteredTransactions)) {
+            return (String) historyTable.getValueAt(selectedRowIndex, 2);
+        } else {
+            return filteredTransactions.get(0).getAccountFrom().getAccountNumber();
+        }
+    }
+
+    private void generateAndDisplayReport(String accountNumber) {
+        BankUser user = transactionModule.getUserInfoForAccountNumber(accountNumber);
         String report = historyReportGenerator.generateReport(accountNumber);
         TransactionReportView reportView = new TransactionReportView(user, report);
         reportView.setVisible(true);
     }
-    @Override
     public void setupDynamicFilters() {
-        JPanel accountNumberPanel = new JPanel();
-        accountNumberInput = new JTextField(20);
-        accountNumberPanel.add(accountNumberInput);
-        JPanel namePanel = new JPanel();
-        nameInput = new JTextField(20);
-        namePanel.add(nameInput);
-        JPanel transactionTypePanel = new JPanel();
-        transactionTypeFilterComboBox = new JComboBox<>(new String[]{"Transfer", "Deposit", "Withdrawal"});
-        transactionTypePanel.add(transactionTypeFilterComboBox);
-        JPanel amountPanel = new JPanel();
-        amountInput = new JComboBox<>(new String[]{"Maximo", "Minimo"});
-        amountPanel.add(amountInput);
+        dynamicFilterPanels.put("Filtrar por Número de cuenta", createFilterPanel(accountNumberInput = new JTextField(20)));
+        dynamicFilterPanels.put("Filtrar por Nombre y/o Apellidos", createFilterPanel(nameInput = new JTextField(20)));
+        dynamicFilterPanels.put("Filtrar por Tipo de Transacción", createFilterPanel(transactionTypeComboBox = new JComboBox<>(new String[]{"Transfer", "Deposit", "Withdrawal"})));
+        dynamicFilterPanels.put("Filtrar por Monto", createFilterPanel(amountInput = new JComboBox<>(new String[]{"Maximo", "Minimo"})));
+        dynamicFilterPanels.put("Filtrar por Fechas", createDateFilterPanel());
+
+        for (Map.Entry<String, JPanel> entry : dynamicFilterPanels.entrySet()) {
+            dynamicFilterPanel.add(entry.getValue(), entry.getKey());
+        }
+    }
+    private JPanel createFilterPanel(JComponent component) {
+        JPanel panel = new JPanel();
+        panel.add(component);
+        return panel;
+    }
+    private JPanel createDateFilterPanel() {
         JPanel dateFilterPanel = new JPanel();
         dateRangeComboBox = new JComboBox<>(new String[]{"1 semana", "1 mes", "Rango de fechas"});
-        Date start = new GregorianCalendar(2022, Calendar.OCTOBER, 1).getTime();
-        Date end = new Date();
         startDateComboBox = new JComboBox<Date>();
         endDateComboBox = new JComboBox<Date>();
+        fillDateComboBoxes();
+        startDateComboBox.addActionListener(e -> updateEndDateComboBox((Date) startDateComboBox.getSelectedItem()));
+        dateFilterPanel.add(dateRangeComboBox);
+        dateFilterPanel.add(startDateComboBox);
+        dateFilterPanel.add(endDateComboBox);
+        dateRangeComboBox.addActionListener(e -> onDateRangeChanged(dateRangeComboBox));
+        return dateFilterPanel;
+    }
+    private void fillDateComboBoxes() {
+        Date start = new GregorianCalendar(2022, Calendar.OCTOBER, 1).getTime();
+        Date end = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(start);
         while (!calendar.getTime().after(end)) {
             startDateComboBox.addItem(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-        startDateComboBox.addActionListener(e -> updateEndDateComboBox((Date) startDateComboBox.getSelectedItem()));
-        dateFilterPanel.add(dateRangeComboBox);
-        dateFilterPanel.add(startDateComboBox);
-        dateFilterPanel.add(endDateComboBox);
-        dynamicFilterPanel.add(accountNumberPanel, "Filtrar por Número de cuenta");
-        dynamicFilterPanel.add(namePanel, "Filtrar por Nombre y/o Apellidos");
-        dynamicFilterPanel.add(transactionTypePanel, "Filtrar por Tipo de Transacción");
-        dynamicFilterPanel.add(amountPanel, "Filtrar por Monto");
-        dynamicFilterPanel.add(dateFilterPanel, "Filtrar por Fechas");
-        dateRangeComboBox.addActionListener(e -> onDateRangeChanged(dateRangeComboBox));
     }
     private void onFilterTypeChanged(ActionEvent e) {
         CardLayout cl = (CardLayout)(dynamicFilterPanel.getLayout());
@@ -244,34 +260,44 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
     }
     @Override
     public void performSearch(ActionEvent e) {
+        try {
+            Map<String, Object> parameters = prepareParameters();
+            filteredTransactions = performTransactionSearch(parameters);
+            updateTableModel(filteredTransactions);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "Campo Vacio. Ingrese un valor para la búsqueda", "AVISO", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private Map<String, Object> prepareParameters() {
         String selectedFilter = (String) filterTypeComboBox.getSelectedItem();
         HistoryFilters filterEnum = historyFiltersMap.get(selectedFilter);
         Map<String, Object> parameters = new HashMap<>();
+
+
         if (filterEnum == HistoryFilters.TRANSACTION_DATE) {
-            JComponent[] component = filterEnum.getComponent(this);
-            String value = filterEnum.getValue(component);
+            String value = getFilterValue(filterEnum);
             Date startDate = (Date) startDateComboBox.getSelectedItem();
             Date endDate = (Date) endDateComboBox.getSelectedItem();
             parameters.put(filterEnum.toString(), value);
             parameters.put("startDate", startDate);
             parameters.put("endDate", endDate);
-        } else {
-            JComponent[] component = filterEnum.getComponent(this);
-            String value = filterEnum.getValue(component);
+        }else {
+            String value = getFilterValue(filterEnum);
             parameters.put(filterEnum.toString(), value);
         }
-        try {
-            JComponent[] component = filterEnum.getComponent(this);
-            String value = filterEnum.getValue(component);
-            if (value == null || value.isEmpty()) {
-                throw new IllegalArgumentException("Campo vacío");
-            }
-            parameters.put(filterEnum.toString(), value);
-            filteredTransactions = filterEnum.getTransactions(transactionModule, parameters);
-            updateTableModel(filteredTransactions);
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, "Campo Vacio. Ingrese un valor para la búsqueda", "AVISO", JOptionPane.WARNING_MESSAGE);
-        }
+        return parameters;
+    }
+
+    private List<Transaction> performTransactionSearch(Map<String, Object> parameters) {
+        String selectedFilter = (String) filterTypeComboBox.getSelectedItem();
+        HistoryFilters filterEnum = historyFiltersMap.get(selectedFilter);
+        return filterEnum.getTransactions(transactionModule, parameters);
+    }
+
+    private String getFilterValue(HistoryFilters filterEnum) {
+        JComponent[] component = filterEnum.getComponent(this);
+        return filterEnum.getValue(component);
     }
     @Override
     public void updateTableModel(List<?> transactionList) {
