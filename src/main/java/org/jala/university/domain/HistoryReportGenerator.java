@@ -17,16 +17,20 @@ public class HistoryReportGenerator {
         BankUser user = transactionModule.getUserInfoForAccountNumber(accountNumber);
 
         StringBuilder report = new StringBuilder();
-        report.append("Reporte de Transaccion\n");
         report.append("Nombre del Cliente: ").append(user.getFirstName()).append(" ").append(user.getLastName()).append("\n");
         report.append("Cliente ID: ").append(user.getIdentification()).append("\n");
         report.append("Numero de cuenta: ").append(accountNumber).append("\n");
+        report.append("\n");
+        report.append("-----------------------------------------------------------------").append("\n");
+        report.append("\n");
 
         for (Transaction transaction : transactions) {
             report.append("Fecha: ").append(transaction.getDate()).append("\n");
             report.append("Tipo: ").append(transaction.getType()).append("\n");
-            report.append("Cuenta de origen: ").append(transaction.getAccountFrom().getAccountNumber()).append("\n");
-            report.append("Cuenta de destino: ").append(transaction.getAccountTo().getAccountNumber()).append("\n");
+            String accountFrom = (transaction.getAccountFrom() != null) ? transaction.getAccountFrom().getAccountNumber() : "N/A";
+            String accountTo = (transaction.getAccountTo() != null) ? transaction.getAccountTo().getAccountNumber() : "N/A";
+            report.append("Cuenta de origen: ").append(accountFrom).append("\n");
+            report.append("Cuenta de destino: ").append(accountTo).append("\n");
             report.append("Estado: ").append(transaction.getStatus()).append("\n\n");
         }
         return report.toString();

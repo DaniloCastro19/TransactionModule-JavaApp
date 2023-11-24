@@ -22,9 +22,9 @@ public class TransactionReportView extends JFrame {
     public TransactionReportView(BankUser user, String report) {
         initializeUI();
         showReport(report);
-        setTitle("Reporte de Transacciones");
+        setTitle("REPORTE");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 400);
+        setSize(600, 550);
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -37,19 +37,11 @@ public class TransactionReportView extends JFrame {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLabel, BorderLayout.NORTH);
 
-        reportTextArea = new JTextArea();
-        reportTextArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(reportTextArea);
-        add(scrollPane, BorderLayout.CENTER);
-
-        JButton closeButton = new JButton("Cerrar");
-        closeButton.addActionListener(e -> dispose());
-        add(closeButton, BorderLayout.SOUTH);
     }
     private void showReport(String report) {
         reportTextArea = new JTextArea();
         reportTextArea.setEditable(false);
-        reportTextArea.setText(report); // Mostrar el reporte en el TextArea
+        reportTextArea.setText(report);
         JScrollPane scrollPane = new JScrollPane(reportTextArea);
         add(scrollPane, BorderLayout.CENTER);
 

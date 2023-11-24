@@ -64,7 +64,6 @@ public class HistoryReportGeneratorTest {
         String report = reportGenerator.generateReport(accountNumber);
 
         assertNotNull(report);
-        assertTrue(report.contains("Reporte de Transaccion"));
         assertTrue(report.contains("Nombre del Cliente: Gabriel Mendoza"));
         assertTrue(report.contains("Cliente ID: ID001"));
         assertTrue(report.contains("Numero de cuenta: 0908786651"));

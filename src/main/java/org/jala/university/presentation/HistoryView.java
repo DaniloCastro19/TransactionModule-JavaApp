@@ -112,8 +112,12 @@ public class HistoryView extends JFrame implements HistoryViewInterface {
     private boolean areMultipleAccounts(List<Transaction> transactions) {
         Set<String> uniqueAccountNumbers = new HashSet<>();
         for (Transaction transaction : transactions) {
-            uniqueAccountNumbers.add(transaction.getAccountFrom().getAccountNumber());
-            uniqueAccountNumbers.add(transaction.getAccountTo().getAccountNumber());
+            if (transaction.getAccountFrom() != null){
+                uniqueAccountNumbers.add(transaction.getAccountFrom().getAccountNumber());
+            }
+            if (transaction.getAccountTo() != null){
+                uniqueAccountNumbers.add(transaction.getAccountTo().getAccountNumber());
+            }
         }
         return uniqueAccountNumbers.size() > 1;
     }
