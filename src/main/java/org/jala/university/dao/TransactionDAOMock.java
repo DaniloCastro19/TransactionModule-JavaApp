@@ -110,8 +110,8 @@ public class TransactionDAOMock extends TransactionDAO {
     @Override
     public List<Transaction> getTransactionsWithAccountNumber(String accountNumber) {
         return transactionMap.values().stream()
-                .filter(transaction -> transaction.getAccountFrom().getAccountNumber().equals(accountNumber) ||
-                        transaction.getAccountTo().getAccountNumber().equals(accountNumber))
+                .filter(transaction -> transaction.getAccountFrom() != null && transaction.getAccountFrom().getAccountNumber().equals(accountNumber) ||
+                        transaction.getAccountTo() != null && transaction.getAccountTo().getAccountNumber().equals(accountNumber))
                 .collect(Collectors.toList());
     }
 }

@@ -55,14 +55,14 @@ class TransactionServiceTest {
                 .status(initialTransactionStatus)
                 .description("Transferencia.")
                 .build();
-        TransactionStatus actualTransactionStatus = transactionService.transfer(transaction);
+        Transaction actualTransaction = transactionService.transfer(transaction);
         Long accountFromNewBalance = accountFrom.getBalance();
         Long accountToNewBalance = accountTo.getBalance();
 
-        assertNotEquals(actualTransactionStatus, initialTransactionStatus);
+        assertNotEquals(actualTransaction.getStatus(), initialTransactionStatus);
         assertNotEquals(initialAccountFromBalance, accountFromNewBalance);
         assertNotEquals(initialAccountToBalance, accountToNewBalance);
-        assertEquals(actualTransactionStatus, TransactionStatus.COMPLETED);
+        assertEquals(actualTransaction.getStatus(), TransactionStatus.COMPLETED);
     }
     @Test
     void makeTransfer_transferFailed(){
@@ -79,13 +79,14 @@ class TransactionServiceTest {
                 .description("Transferencia.")
                 .build();
 
-        TransactionStatus actualTransactionStatus = transactionService.transfer(transaction);
+        Transaction actualTransaction = transactionService.transfer(transaction);
+
         Long accountFromNewBalance = accountFrom.getBalance();
         Long accountToNewBalance = accountTo.getBalance();
 
         assertEquals(initialAccountFromBalance, accountFromNewBalance);
         assertEquals(initialAccountToBalance, accountToNewBalance);
-        assertEquals(actualTransactionStatus, TransactionStatus.FAILED);
+        assertEquals(actualTransaction.getStatus(), TransactionStatus.FAILED);
 
     }
 }
