@@ -17,7 +17,7 @@ public class BankUserTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int columnIndex){
         return columnNames[columnIndex];
-        
+
     }
 
     @Override
