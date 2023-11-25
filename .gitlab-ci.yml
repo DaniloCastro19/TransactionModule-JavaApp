@@ -7,7 +7,10 @@
 # For docker image tags see https://hub.docker.com/_/maven/
 #
 # For general lifecycle information see https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-
+stages:
+  - test
+  - build
+  - deploy
 # This template will build and test your projects
 # * Caches downloaded dependencies and plugins between invocation.
 # * Verify but don't deploy merge requests.
@@ -68,13 +71,52 @@ verify:jdk17:
 # For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for more details.
 # Please note: The GitLab Maven Repository is currently only available in GitLab Premium / Ultimate.
 # For `master` or `main` branch run `mvn deploy` automatically.
+
 deploy:jdk17:
   stage: deploy
   script:
     - if [ ! -f ci_settings.xml ]; then
-        echo "CI settings missing\! If deploying to GitLab Maven Repository, please see https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for instructions.";
+      echo "CI settings missing\! If deploying to GitLab Maven Repository, please see https://docs.gitlab.com/ee/user/packages/maven_repository/index.html#create-maven-packages-with-gitlab-cicd for instructions.";
       fi
     - 'mvn $MAVEN_CLI_OPTS deploy --settings ci_settings.xml'
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+checkstyle:
+  stage: test
+  script:
+    - mvn checkstyle:check
+  artifacts:
+    paths:
+      - target/site/checkstyle.html
+      - target/site/checkstyle.xml
+    reports:
+      codequality: target/site/checkstyle.xml
+
+test-jacoco:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report
+  artifacts:
+    paths:
+      - target/custom-jacoco/
+
+
+run_unit_tests:
+  stage: test
+  script:
+    - mvn test
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+
+build_application:
+  stage: build
+  script:
+    - mvn package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week

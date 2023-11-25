@@ -2,7 +2,6 @@ package org.jala.university.domain;
 
 import org.jala.university.dao.CheckDAO;
 import org.jala.university.model.Check;
-
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
