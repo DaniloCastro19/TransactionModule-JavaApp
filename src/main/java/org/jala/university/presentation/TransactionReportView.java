@@ -15,38 +15,39 @@ import java.awt.Font;
 
 public class TransactionReportView extends JFrame {
 
-    private JTextArea reportTextArea;
-    private TransactionModule transactionModule;
-    private HistoryReportGenerator reportGenerator;
+  private JTextArea reportTextArea;
+  private TransactionModule transactionModule;
+  private HistoryReportGenerator reportGenerator;
 
-    public TransactionReportView(BankUser user, String report) {
-        initializeUI();
-        showReport(report);
-        setTitle("REPORTE");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 550);
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+  public TransactionReportView(BankUser user, String report) {
+    initializeUI();
+    showReport(report);
+    setTitle("REPORTE");
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setSize(600, 550);
+    setLocationRelativeTo(null);
+    setVisible(true);
+  }
 
-    private void initializeUI() {
-        setLayout(new BorderLayout());
+  private void initializeUI() {
+    setLayout(new BorderLayout());
 
-        JLabel titleLabel = new JLabel("Reporte de Transacciones");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(titleLabel, BorderLayout.NORTH);
+    JLabel titleLabel = new JLabel("Reporte de Transacciones");
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+    titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    add(titleLabel, BorderLayout.NORTH);
 
-    }
-    private void showReport(String report) {
-        reportTextArea = new JTextArea();
-        reportTextArea.setEditable(false);
-        reportTextArea.setText(report);
-        JScrollPane scrollPane = new JScrollPane(reportTextArea);
-        add(scrollPane, BorderLayout.CENTER);
+  }
 
-        JButton closeButton = new JButton("Cerrar");
-        closeButton.addActionListener(e -> dispose());
-        add(closeButton, BorderLayout.SOUTH);
-    }
+  private void showReport(String report) {
+    reportTextArea = new JTextArea();
+    reportTextArea.setEditable(false);
+    reportTextArea.setText(report);
+    JScrollPane scrollPane = new JScrollPane(reportTextArea);
+    add(scrollPane, BorderLayout.CENTER);
+
+    JButton closeButton = new JButton("Cerrar");
+    closeButton.addActionListener(e -> dispose());
+    add(closeButton, BorderLayout.SOUTH);
+  }
 }

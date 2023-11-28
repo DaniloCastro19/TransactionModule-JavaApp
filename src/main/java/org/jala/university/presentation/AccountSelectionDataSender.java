@@ -1,5 +1,5 @@
 package org.jala.university.presentation;
 
 public interface AccountSelectionDataSender {
-    void onClosedAccountSelecctionView(String[] accountData);
+  void onClosedAccountSelecctionView(String[] accountData);
 }

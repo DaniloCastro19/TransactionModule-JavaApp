@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CheckModule {
-    void createCheck(Check check);
-    List<Check> findCheckWithUUID(UUID checkId);
+  void createCheck(Check check);
 
-    List<Check> findCheckWithAccountNumber(String parameter);
+  List<Check> findCheckWithUUID(UUID checkId);
 
-    List<Check> findCheckWithName(String parameter);
+  List<Check> findCheckWithAccountNumber(String parameter);
 
-    List<Check> findCheckWithDate(Date startDate, Date endDate);
+  List<Check> findCheckWithName(String parameter);
 
-    List<Check> findChecksWithAmount(boolean isAscending);
-    void delete(Check check);
+  List<Check> findCheckWithDate(Date startDate, Date endDate);
+
+  List<Check> findChecksWithAmount(boolean isAscending);
+
+  void delete(Check check);
 
 }
