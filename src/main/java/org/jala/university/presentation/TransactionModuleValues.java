@@ -15,24 +15,24 @@ import java.util.UUID;
 @Builder
 
 public class TransactionModuleValues {
-    private UUID id;
-    private Date date;
-    private TransactionType transactionType;
-    private Long amount;
-    private Currency currency;
-    private Account accountFrom;
-    private Account accountTo;
-    private TransactionStatus transactionStatus;
-    private String description;
-    private String printableId;
-    private String printableDate;
-    private String printableTransactionType;
-    private String printableAmount;
-    private String printableCurrency;
-    private String printableAccountFrom;
-    private String printableAccountTo;
-    private String printableTransactionStatus;
-    private String printableDescription;
+  private UUID id;
+  private Date date;
+  private TransactionType transactionType;
+  private Long amount;
+  private Currency currency;
+  private Account accountFrom;
+  private Account accountTo;
+  private TransactionStatus transactionStatus;
+  private String description;
+  private String printableId;
+  private String printableDate;
+  private String printableTransactionType;
+  private String printableAmount;
+  private String printableCurrency;
+  private String printableAccountFrom;
+  private String printableAccountTo;
+  private String printableTransactionStatus;
+  private String printableDescription;
 }
 
 

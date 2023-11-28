@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public interface AccountModule {
 
-    void create(Account account);
+  void create(Account account);
 
-    Account get(UUID id);
+  Account get(UUID id);
 
-    List<Account> getAll();
+  List<Account> getAll();
 
-    Account update(Account account);
+  Account update(Account account);
 
-    void delete(UUID id);
+  void delete(UUID id);
 }
