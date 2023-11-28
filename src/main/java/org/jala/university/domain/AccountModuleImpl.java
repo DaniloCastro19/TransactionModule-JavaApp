@@ -9,34 +9,34 @@ import java.util.UUID;
 
 public class AccountModuleImpl implements AccountModule {
 
-    private final AccountDAO accountDao;
+  private final AccountDAO accountDao;
 
-    public AccountModuleImpl(AccountDAO accountDao) {
-        this.accountDao = accountDao;
-    }
+  public AccountModuleImpl(AccountDAO accountDao) {
+    this.accountDao = accountDao;
+  }
 
-    @Override
-    public void create(Account account) {
-        accountDao.create(account);
-    }
+  @Override
+  public void create(Account account) {
+    accountDao.create(account);
+  }
 
-    @Override
-    public Account get(UUID id) {
-        return accountDao.findOne(id);
-    }
+  @Override
+  public Account get(UUID id) {
+    return accountDao.findOne(id);
+  }
 
-    @Override
-    public List<Account> getAll() {
-        return accountDao.findAll();
-    }
+  @Override
+  public List<Account> getAll() {
+    return accountDao.findAll();
+  }
 
-    @Override
-    public Account update(Account account) {
-        return accountDao.update(account);
-    }
+  @Override
+  public Account update(Account account) {
+    return accountDao.update(account);
+  }
 
-    @Override
-    public void delete(UUID id) {
-        accountDao.deleteById(id);
-    }
+  @Override
+  public void delete(UUID id) {
+    accountDao.deleteById(id);
+  }
 }
